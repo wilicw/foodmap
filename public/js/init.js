@@ -47,7 +47,8 @@ let render_map = () => {
 			marker.addTo(map)
 			marker.bindPopup(`
 				<b>${store.name}</b><br>
-				價格：${store.price[0]} ~ ${store.price[1]}
+				價位： ${store.price_level}<br>
+				分類： ${store.type.join(" ,")}
 			`)
 			store["marker"] = marker
 		})
@@ -62,7 +63,7 @@ let render_type = () => {
 		type_of_food.forEach((item) => {
 			$("#type_of_food").innerHTML += `
 				<input type="checkbox" name="type_of_food" value="${item}">
-				<label for="type_of_food"> ${item}</label>
+				<label for="type_of_food"> ${item}</label> 
 			`
 		})
 	})

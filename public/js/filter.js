@@ -1,8 +1,19 @@
-let price
+let price, price_level
+
+let to_price_level = () => {
+  if (price < 100) {
+    price_level = "$"
+  } else if (price >= 100 && price < 200) {
+    price_level = "$$"
+  } else {
+    price_level = " $$$"
+  }
+}
 
 let change_price = () => {
   price = $("#price_filter").value
-  $("#max_price").innerHTML = price
+  to_price_level()
+  $("#max_price").innerHTML = price_level
 }
 change_price()
 
@@ -32,7 +43,7 @@ let search = () => {
       }
     })
     
-    if (store.price[0]+store.price[1] < price*2) {
+    if (store.price_level.length <= price_level.length) {
       if (numoftype) {
         if (!store.name.search(search_text)) {
           store.marker.addTo(map)
