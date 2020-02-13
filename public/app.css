@@ -1,90 +1,73 @@
-html, body{
-  width: 100%;
-  font-weight: 300;
-  height: 100%;
-  font-family: 'Noto Sans TC', sans-serif;
-}
-
-.content {
-  display: table;
-  width: 100vw;
-  height: 100%;
-  table-layout: fixed;
-}
-
-.title {
-  font-weight: 400;
-}
-
-input {
-  width: 90%;
-}
-
-#map {
-  display: table-cell;
-  height: 100%;
-  width: 75%;
-}
-
-.search_box {
-  display: table-cell;
-  height: 100%;
-  width: 25%;
-  padding: 30px;
-}
-
-.back_box {
-  display: none;
-}
-
-input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
-}
-
-.btn {
-  border: 0;
-  padding: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  border: 1px solid #acacac;
-  border-radius: 2px;
-  background-color: #ffffff;
-}
-
-.shadow:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-#search_text {
-  padding: 1em;
-  border: none;
-  border-radius: 2px;
-  border: 1px solid #acacac;
-}
-
-@media only screen and (max-width: 1000px) {
-  .content {
-    display: block;
-    width: 100%;
+html {
     height: 100%;
-  }
+}
 
-  .back_box {
-    display: block;
-    height: 12vh;
-    width: 100vw;
-  }
+body {
+    height: 100%;
+    margin: 0;
+    position: relative;
+    font-family: 'Noto Sans TC', sans-serif;
+}
 
-  #map {
+header {
+    height: 100%;
+    width: 25vw;
+    top: 0;
+    left: 0;
+    position: absolute;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+main {
+    height: 100%;
+    width: calc(100% - 25vw);
+    top: 0;
+    left: 25vw;
+    position: absolute;
+}
+
+.header_title {
+    font-weight: 300;
+    font-size: 24px;
+}
+
+.form_label {
     display: block;
-    height: 88vh;
+}
+
+.form_label > span {
+    display: block;
+    font-size: 17px;
+    margin: 1.4em 0;
+}
+
+#keyword {
     width: 100%;
-  }
-  
-  .search_box {
+    padding: 1em;
+    border-radius: 2px;
+    outline: 0;
+    border: 1px solid #acacac;
     display: block;
-    height: 100vh;
-    width: 80%;
-  }
+    box-sizing: border-box;
+}
+
+#price_level {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.price_level_button {
+    outline: 0;
+    border: 0;
+    background: transparent;
+    font-size: 42px;
+    opacity: 0.35;
+    cursor: pointer;
+}
+
+.price_level_button.active {
+    opacity: 1;
 }
