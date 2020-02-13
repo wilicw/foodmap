@@ -48,7 +48,8 @@ let render_map = () => {
 			marker.bindPopup(`
 				<b>${store.name}</b><br>
 				價位： ${store.price_level}<br>
-				分類： ${store.type.join(" ,")}
+				分類： ${store.type.join(", ")}<br>
+				<a>詳細資訊</a>
 			`)
 			store["marker"] = marker
 		})
