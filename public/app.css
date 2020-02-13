@@ -1,0 +1,64 @@
+html, body{
+  width: 100%;
+  height: 100%;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.content {
+  display: table;
+  width: 100%;
+  height: 100%;
+  table-layout: fixed;
+}
+
+
+input {
+  width: 90%;
+}
+
+#map {
+  display: table-cell;
+  height: 100%;
+  width: 75%;
+}
+
+.search_box {
+  display: table-cell;
+  height: 100%;
+  width: 25%;
+  padding: 30px;
+}
+
+.back_box {
+  display: none;
+}
+
+input[type="checkbox"] {
+  width: 5%;
+}
+
+@media only screen and (max-width: 1000px) {
+  .content {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .back_box {
+    display: block;
+    height: 7vh;
+    width: 100vw;
+  }
+
+  #map {
+    display: block;
+    height: 93vh;
+    width: 100%;
+  }
+  
+  .search_box {
+    display: block;
+    height: 100vh;
+    width: 80%;
+  }
+}
