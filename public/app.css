@@ -46,13 +46,13 @@ input[type="checkbox"] {
 
   .back_box {
     display: block;
-    height: 7vh;
+    height: 14vh;
     width: 100vw;
   }
 
   #map {
     display: block;
-    height: 93vh;
+    height: 86vh;
     width: 100%;
   }
   
