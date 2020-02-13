@@ -12,16 +12,15 @@
   
   <div class="content">
     <div class="search_box" id="search_box">
-      <h2>大安食物地圖</h2>
+      <h2 class="title">大安食物地圖</h2>
       <div>
         <p>名稱</p>
-        <input placeholder="搜尋食物" id="search_text" type="text">
+        <input placeholder="搜尋食物" id="search_text" class="shadow" type="text">
       </div>
       <br>
       <div>
-        <p>預算</p>
-        <p style="color: #998899;"><span id="max_price"></span>元</p>
-        <input type="range" id="price_filter" min="0" max="500" value="150" onchange="change_price()"/>
+        <p>預算 &nbsp;<span style="color: #998899;" id="max_price"></span></p>
+        <input type="range" id="price_filter" min="0" max="300" value="150" onchange="change_price()"/>
       </div>
       <br>
       <div>
@@ -29,11 +28,9 @@
         <div id="type_of_food"></div>
       </div>
       <br>
-      <button onclick="search()">搜尋</button>
+      <button class="btn shadow" onclick="search()">搜尋</button>
     </div>
-    <div class="back_box" onclick="smoothScroll('search_box')">
-      <p>返回搜尋</p>
-    </div>
+    <div class="back_box" onclick="smoothScroll('search_box')"></div>
     <div id="map"></div>
   </div>
 

@@ -1,16 +1,20 @@
 html, body{
   width: 100%;
+  font-weight: 300;
   height: 100%;
   font-family: 'Noto Sans TC', sans-serif;
 }
 
 .content {
   display: table;
-  width: 100%;
+  width: 100vw;
   height: 100%;
   table-layout: fixed;
 }
 
+.title {
+  font-weight: 400;
+}
 
 input {
   width: 90%;
@@ -34,7 +38,29 @@ input {
 }
 
 input[type="checkbox"] {
-  width: 5%;
+  width: 15px;
+  height: 15px;
+}
+
+.btn {
+  border: 0;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border: 1px solid #acacac;
+  border-radius: 2px;
+  background-color: #ffffff;
+}
+
+.shadow:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+#search_text {
+  padding: 1em;
+  border: none;
+  border-radius: 2px;
+  border: 1px solid #acacac;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -46,13 +72,13 @@ input[type="checkbox"] {
 
   .back_box {
     display: block;
-    height: 14vh;
+    height: 12vh;
     width: 100vw;
   }
 
   #map {
     display: block;
-    height: 86vh;
+    height: 88vh;
     width: 100%;
   }
   
