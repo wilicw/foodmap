@@ -1,6 +1,6 @@
 let $ = (i) => document.querySelector(i)
 let _ = document
-let sotres = []
+let stores = []
 
 let render = () => {
 	render_type()
