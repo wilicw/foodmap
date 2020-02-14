@@ -40,6 +40,16 @@ router.get('/menu/:store', (req, res, next) => {
   })
 })
 
+/* GET detial by store id */
+router.get('/stroe/:store', (req, res, next) => {
+  const store_id = sanitize(req.params.store)
+  const store = client.db(process.env.DB).collection("stores").findOne({
+    _id: new ObjectId(store_id)
+  }, (err, doc) => {
+    res.send(JSON.stringify(doc ? doc : {"status": 404, "msg": "No found."}))
+  })
+})
+
 /* GET food types */
 router.get('/types', (req, res, next) => {
   const stores = client.db(process.env.DB).collection("stores").find({})
@@ -87,4 +97,24 @@ router.post('/score', (req, res, next) => {
   res.send("200")
 })
 
+/* POST edit stroe information */
+router.post('/store/:store', (req, res, next) => {
+  const data = req.body
+  const now = new Date().getTime()
+  const store_id = sanitize(req.params.store)
+  let stores = client.db(process.env.DB).collection("stores")
+  stores.updateOne(
+    {_id: new ObjectId(store_id)},
+    {
+      $set: {
+        name: sanitize(data.name),
+        price_level: sanitize(data.price_level),
+        type: sanitize(data.type),
+        menu: sanitize(data.menu),
+        catagories: sanitize(data.catagories)
+      }
+    }
+  )
+  res.send("200")
+})
 module.exports = router
