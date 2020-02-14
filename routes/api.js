@@ -63,6 +63,19 @@ router.get('/types', (req, res, next) => {
   })
 })
 
+/* GET stores categories */
+router.get('/categories', (req, res, next) => {
+  const stores = client.db(process.env.DB).collection("stores").find({})
+  stores.toArray((err, docs) => {
+    let categories = []
+    for (var index in docs) {
+      categories.push(docs[index].categories)
+    }
+    categories = [... new Set(categories.flat())]
+    res.send(JSON.stringify(categories))
+  })
+})
+
 /* POST uploads socre */
 router.post('/score', (req, res, next) => {
   const data = req.body
@@ -111,7 +124,7 @@ router.post('/store/:store', (req, res, next) => {
         price_level: sanitize(data.price_level),
         type: sanitize(data.type),
         menu: sanitize(data.menu),
-        catagories: sanitize(data.catagories)
+        categories: sanitize(data.categories)
       }
     }
   )
