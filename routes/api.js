@@ -21,7 +21,22 @@ router.get('/', (req, res, next) => {
 router.get('/stores', (req, res, next) => {
   const stores = client.db(process.env.DB).collection("stores").find({})
   stores.toArray((err, docs) => {
-    res.send(JSON.stringify(docs))
+    let result = []
+    docs.map(store => {
+      delete store.menu
+      result.push(store)
+    })
+    res.send(JSON.stringify(result))
+  })
+})
+
+/* GET menu by store id */
+router.get('/menu/:store', (req, res, next) => {
+  const store_id = sanitize(req.params.store)
+  const store = client.db(process.env.DB).collection("stores").findOne({
+    _id: new ObjectId(store_id)
+  }, (err, doc) => {
+    res.send(JSON.stringify(doc.menu ? doc.menu : {"status": 404, "msg": "No menu in this store."}))
   })
 })
 
