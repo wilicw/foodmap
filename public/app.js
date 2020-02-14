@@ -18,6 +18,20 @@ const generateIconByColor = (color) => new L.Icon({
 
 const getZoomValue = () => (screen.width < 1000) ? ZOOM_MOBILE : ZOOM
 
+const getAverageScore = (scores) => {
+    if (scores.length === 0) return '尚無評'
+    let sum = 0
+    scores.forEach((score) => (sum += score.score))
+    return parseFloat(sum / scores.length).toFixed(1);
+}
+
+const getPriceDescription = (price) => {
+    if (price.length === 1) return '低價位'
+    if (price.length === 2) return '中價位'
+    if (price.length === 3) return '高價位'
+    return '未知價位'
+}
+
 const getPriceLevel = (priceLevel) => priceLevel.length
 
 // MAP
@@ -44,6 +58,23 @@ const initLeafletMap = async () => {
     initStoreMarkers()
 }
 
+// RECOMMENDATION
+
+const generateListItem = (store) => `
+    <div class="store">
+        <p class="name">${store.name}</p>
+        <span class="score">${getAverageScore(store.scores)}分 · ${getPriceDescription(store.price_level)}</span>
+    </div>
+`
+
+const initStoreList = () => {
+    let storeList = $('.header_sec.recommend')
+    stores.map((store) => {
+        let listItem = generateListItem(store)
+        storeList.insertAdjacentHTML('beforeend', listItem)
+    })
+}
+
 // TAGS
 
 const generateTagElement =  (name, id) => `
@@ -54,8 +85,6 @@ const generateTagElement =  (name, id) => `
 `
 
 const fetchTags = async () => (await fetch('api/types')).json()
-
-
 
 const initTags = async () => {
     let count = 0
@@ -171,9 +200,41 @@ const listFilteredStores = () => {
     smoothScroll('map')
 }
 
+// TABS
+
+const initTabs = () => {
+    // TODO: refactor this code
+    $('.tab_button.recommend').onclick = (e) => {
+        $('.tab_button.recommend').classList.add('active')
+        $('.tab_button.search').classList.remove('active')
+        $('.header_sec.recommend').classList.add('active')
+        $('.header_sec.search').classList.remove('active')
+    };
+    $('.tab_button.search').onclick = (e) => {
+        $('.tab_button.recommend').classList.remove('active')
+        $('.tab_button.search').classList.add('active')
+        $('.header_sec.recommend').classList.remove('active')
+        $('.header_sec.search').classList.add('active')
+    };
+}
+
+// TOGGLE MENU
+
+const toggleMenu  = () => {
+    let toggleButton = $('.header_toggle')
+    let menu = $('header')
+    let state = menu.classList.contains('expand')
+    let action = state ? 'remove' : 'add'
+    toggleButton.classList[action]('active')
+    menu.classList[action]('expand')
+}
+
 window.onload = async function () {
-    initLeafletMap()
+    await initLeafletMap()
     initTags()
+    initTabs()
     initPriceLevel()
+    initStoreList()
     $('#search').addEventListener('click', listFilteredStores)
+    $('.header_toggle').addEventListener('click', toggleMenu)
 }
