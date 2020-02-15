@@ -41,7 +41,7 @@ router.get('/menu/:store', (req, res, next) => {
 })
 
 /* GET detial by store id */
-router.get('/stroe/:store', (req, res, next) => {
+router.get('/store/:store', (req, res, next) => {
   const store_id = sanitize(req.params.store)
   const store = client.db(process.env.DB).collection("stores").findOne({
     _id: new ObjectId(store_id)
