@@ -41,7 +41,7 @@ router.get('/menu/:store', (req, res, next) => {
 })
 
 /* GET detial by store id */
-router.get('/stroe/:store', (req, res, next) => {
+router.get('/store/:store', (req, res, next) => {
   const store_id = sanitize(req.params.store)
   const store = client.db(process.env.DB).collection("stores").findOne({
     _id: new ObjectId(store_id)
@@ -60,6 +60,19 @@ router.get('/types', (req, res, next) => {
     }
     types = [... new Set(types.flat())]
     res.send(JSON.stringify(types))
+  })
+})
+
+/* GET stores categories */
+router.get('/categories', (req, res, next) => {
+  const stores = client.db(process.env.DB).collection("stores").find({})
+  stores.toArray((err, docs) => {
+    let categories = []
+    for (var index in docs) {
+      categories.push(docs[index].categories)
+    }
+    categories = [... new Set(categories.flat())]
+    res.send(JSON.stringify(categories))
   })
 })
 
@@ -111,7 +124,7 @@ router.post('/store/:store', (req, res, next) => {
         price_level: sanitize(data.price_level),
         type: sanitize(data.type),
         menu: sanitize(data.menu),
-        catagories: sanitize(data.catagories)
+        categories: sanitize(data.categories)
       }
     }
   )
