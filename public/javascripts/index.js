@@ -16,11 +16,9 @@ window.stores = () => console.log(stores)
 
 const initStore = async () => {
     stores = await Store.fetchList()
-    const onMarkerClick = async (e) => {
+    const onMarkerClick = (e) => {
         let id = e.target.options._id
-        let full = await Store.fetchStoreDetails(id)
-        stores[id] = {extended: true, ...stores[id], ...full}
-        storeInfo(stores[id])
+        storeInfo(id)
     }
     Store.forEach(stores, (store) => {
         stores[store._id].score = Store.getAverageScore(store.scores)
@@ -30,10 +28,15 @@ const initStore = async () => {
     })
 }
 
-const storeInfo = (store) => {
+const storeInfo = async (id) => {
+    let store = stores[id]
+    let full = await Store.fetchStoreDetails(store._id)
+    stores[id] = {extended: true, ...stores[id], ...full}
     $('#store_name').innerText = store.name
     $('#store_about').innerText = `${store.score}分 · ${store.priceLevelDescription}價位`
     $('main').classList.add('store')
+    $('#store_menu').innerHTML = ''
+    $('#store_menu').appendChild(Menu.processStoreMenuData(stores[id]))
 }
 
 const Search = () => {
@@ -42,7 +45,7 @@ const Search = () => {
     while (storeList.firstChild) storeList.removeChild(storeList.firstChild)
     Store.forEach(Filter.applyFilter(stores), (store) => {
         storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
-            storeInfo(stores[storeListItem.id])
+            storeInfo(storeListItem.id)
         }))
         store.marker.addTo(map.map)
     })
@@ -61,7 +64,7 @@ const initStoreList = () => {
     const storeList = $('#store_list')
     Store.forEach(stores, (store) => {
         storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
-            storeInfo(stores[storeListItem.id])
+            storeInfo(storeListItem.id)
         }))
     })
 }

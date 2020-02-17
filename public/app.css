@@ -282,3 +282,49 @@ main:not(.store) #store {
     }
 
 }
+
+
+
+.pricing-box {
+    padding-left: 30px;
+    padding-right: 30px;
+	width: 80%;
+	text-align: center;
+}
+
+.items-list {
+	padding: 0;
+	list-style-type: none;
+}
+
+.items-list li {
+  padding: 12px 0;
+  width: 100%;
+  text-align: left;
+}
+
+.items-list li:not(:last-of-type) {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.price_label {
+	float: right;
+	display: inline-block;
+	width: 40px;
+	text-align: center;
+}
+
+.lighter {
+	color: #888888;
+}
+
+#store_menu {
+    height: 70%;
+    scrollbar-width: none;
+    overflow: auto;
+}
+
+
+#store {
+    height: 100%;
+}
