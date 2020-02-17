@@ -2,7 +2,7 @@ class Map {
 
     constructor (element) {
         this.map = L.map(element);
-        this.map.setView(Map.DEFAULT_POSITION, Map.getZoom())
+        this.map.setView([25.03210, 121.54257], Map.getZoom())
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
             maxZoom: 19
@@ -23,7 +23,7 @@ class Map {
     }
 
     static getZoom () {
-        return (screen.width < 1000) ? Map.ZOOM_MOBILE : Map.ZOOM
+        return (screen.width < 1000) ? 16 : 18
     }
 
     static generateIcon (color) {
@@ -34,10 +34,6 @@ class Map {
             popupAnchor: [1, -34]
         })
     }
-
-    static ZOOM = 18
-    static ZOOM_MOBILE = 16
-    static DEFAULT_POSITION = [25.03210, 121.54257]
 
 }
 

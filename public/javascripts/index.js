@@ -12,20 +12,28 @@ const initMap = () => {
     map = new Map($('#map'))
 }
 
+window.stores = () => console.log(stores)
+
 const initStore = async () => {
     stores = await Store.fetchList()
     const onMarkerClick = async (e) => {
         let id = e.target.options._id
         let full = await Store.fetchStoreDetails(id)
-        stores[id] = {extended: true, ...full}
-        console.log(stores[id])
+        stores[id] = {extended: true, ...stores[id], ...full}
+        storeInfo(stores[id])
     }
     Store.forEach(stores, (store) => {
-        store.score = Store.getAverageScore(store.scores)
-        store.priceLevelDescription = Store.describePriceLevel(store.price_level)
-        store.marker = Map.generateMarker(store, onMarkerClick)
+        stores[store._id].score = Store.getAverageScore(store.scores)
+        stores[store._id].priceLevelDescription = Store.describePriceLevel(store.price_level)
+        stores[store._id].marker = Map.generateMarker(store, onMarkerClick)
         map.addMarker(store.marker)
     })
+}
+
+const storeInfo = (store) => {
+    $('#store_name').innerText = store.name
+    $('#store_about').innerText = `${store.score}分 · ${store.priceLevelDescription}價位`
+    $('main').classList.add('store')
 }
 
 const Search = () => {
@@ -33,7 +41,9 @@ const Search = () => {
     Store.forEach(stores, (store) => map.map.removeLayer(store.marker))
     while (storeList.firstChild) storeList.removeChild(storeList.firstChild)
     Store.forEach(Filter.applyFilter(stores), (store) => {
-        storeList.insertAdjacentHTML('beforeend', Menu.generateStoreListItem(store))
+        storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
+            storeInfo(stores[storeListItem.id])
+        }))
         store.marker.addTo(map.map)
     })
     smoothScroll('map')
@@ -50,7 +60,9 @@ const initTagList = async () => {
 const initStoreList = () => {
     const storeList = $('#store_list')
     Store.forEach(stores, (store) => {
-        storeList.insertAdjacentHTML('beforeend', Menu.generateStoreListItem(store))
+        storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
+            storeInfo(stores[storeListItem.id])
+        }))
     })
 }
 
@@ -126,6 +138,14 @@ const initClearFilter = () => {
     })
 }
 
+const initCloseStore = () => {
+    const closeStore = $('#close_store')
+    const main = $('main')
+    closeStore.addEventListener('click', (e) => {
+        main.classList.remove('store')
+    })
+}
+
 const initMenuControl = () => {
     initTextInput()
     initToggleFilter()
@@ -133,6 +153,7 @@ const initMenuControl = () => {
     initToggleSearch()
     initPriceLevel()
     initClearFilter()
+    initCloseStore()
 }
 
 const initMenu = async () => {
