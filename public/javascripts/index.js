@@ -6,7 +6,7 @@ import { Menu } from "./menu.js";
 const $ = (q) => document.querySelector(q),
      $$ = (q) => document.querySelectorAll(q)
 
-let map, stores, tags;
+let map, stores, tags, categories;
 
 const initMap = () => {
     map = new Map($('#map'))
@@ -57,6 +57,14 @@ const initTagList = async () => {
     tags = await Store.fetchTagList()
     for (let tag of tags) {
         tagList.appendChild(Menu.generateTagItem(tag))
+    }
+}
+
+const initCategoriesList = async () => {
+    const CategoriesList = $('#filter_categories')
+    categories = await Store.fetchCategoriesList()
+    for (let category of categories) {
+        CategoriesList.appendChild(Menu.generateCategoriesItem(category))
     }
 }
 
@@ -161,6 +169,7 @@ const initMenuControl = () => {
 
 const initMenu = async () => {
     await initTagList()
+    await initCategoriesList()
     initMenuControl()
     initStoreList()
 }
