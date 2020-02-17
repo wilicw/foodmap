@@ -1,56 +1,79 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+    <meta http-equiv="Accept" content="*">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>大安食物地圖</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
-    <script src="https://code.iconify.design/1/1.0.4/iconify.min.js"></script>
+    <script async src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    <script async defer src="https://code.iconify.design/1/1.0.4/iconify.min.js"></script>
     <link rel="stylesheet" href="app.css">
-    <script src="app.js"></script>
+    <script async defer src="javascripts/index.js" type="module"></script>
 </head>
 <body>
-    <header>
-        <div class="header_sec title">
-            <h1 class="header_title">大安食物地圖</h1>
-            <button class="header_toggle">
-                <span class="iconify menu" data-icon="mdi:menu" data-inline="false"></span>
-                <span class="iconify close" data-icon="mdi:close" data-inline="false"></span>
+    <main>
+        <header>
+            <p id="site_title">大安食物地圖</p>
+            <button id="toggle_search">
+                <span class="iconify" data-icon="mdi:search" data-inline="false"></span>
             </button>
-        </div>
-        <div class="header_sec tabs">
-            <button class="active tab_button recommend">餐廳列表</button>
-            <button class="tab_button search">搜尋</button>
-        </div>
-        <div class="header_sec tab recommend active"></div>
-        <div class="header_sec tab search">
-            <label class="form_label" for="keyword">
-                <input placeholder="名稱" id="keyword" type="text">
+<!--            <button id="toggle_menu">-->
+<!--                <span class="iconify" data-icon="mdi:menu" data-inline="false"></span>-->
+<!--            </button>-->
+        </header>
+        <section id="search">
+            <label for="restaurant_name">
+                <input id="restaurant_name" type="text" placeholder="搜尋食物">
+                <button id="clear_restaurant_name">
+                    <span class="iconify" data-icon="mdi:close" data-inline="false"></span>
+                </button>
             </label>
-            <label class="form_label" for="price_level">
-                <span>最高價位</span>
-                <div id="price_level" data-value="1">
-                    <button class="price_level_button active">
-                        <span class="iconify" data-icon="ic:sharp-attach-money" data-inline="false"></span>
-                    </button>
-                    <button class="price_level_button">
-                        <span class="iconify" data-icon="ic:sharp-attach-money" data-inline="false"></span>
-                    </button>
-                    <button class="price_level_button">
-                        <span class="iconify" data-icon="ic:sharp-attach-money" data-inline="false"></span>
-                    </button>
+        </section>
+        <section id="filter">
+            <button id="toggle_filter">展開篩選條件</button>
+            <button id="clear_filter">清空篩選條件</button>
+            <div id="price_level">
+                <p class="filter_sec_title">最高價位</p>
+                <div id="filter_price_level">
+                    <button class="price_level_button selectable">$</button>
+                    <button class="price_level_button selectable">$$</button>
+                    <button class="price_level_button selectable">$$$</button>
                 </div>
-            </label>
-            <label class="form_label" for="tags">
-                <span>標籤</span>
-                <div id="tags"></div>
-            </label>
-            <button id="search">搜尋</button>
-        </div>
-    </header>
-    <main id="map"></main>
+            </div>
+            <div id="time">
+                <p class="filter_sec_title">時段</p>
+                <div id="filter_time">
+                    <label class="selectable time_button">早餐</label>
+                    <label class="selectable time_button">午餐</label>
+                    <label class="selectable time_button">晚餐</label>
+                </div>
+            </div>
+            <div id="tags">
+                <p class="filter_sec_title">標籤</p>
+                <div id="filter_tag"></div>
+            </div>
+        </section>
+        <span class="divider"></span>
+        <section id="store_list">
+<!--            <div class="message">找到${filteredList.length}項結果</div>-->
+        </section>
+        <section id="store">
+            <div id="store_title">
+                <button id="close_store">
+                    <span class="iconify" data-icon="mdi:arrow-left" data-inline="false"></span>
+                </button>
+                <p id="store_name">餐廳名稱</p>
+            </div>
+            <p id="store_about">4.0分 . 高價位</p>
+            <p id="store_menu_title">菜單</p>
+            <div id="store_menu">
+                <div id="store_menu_empty">暫無內容</div>
+            </div>
+        </section>
+    </main>
+    <div id="map"></div>
 </body>
 </html>
