@@ -474,3 +474,8 @@ header {
         transform: rotate(360deg);
     }
 }
+
+.menu_claim {
+    font-size: 14px;
+    text-align: center;
+}
