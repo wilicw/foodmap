@@ -8,6 +8,13 @@ class Menu {
         return tagItem
     }
 
+    static generateCategoriesItem (category) {
+        let categoriesItem = document.createElement('label')
+        categoriesItem.className = 'category_button selectable'
+        categoriesItem.insertAdjacentText('beforeend', category)
+        return categoriesItem
+    }
+
     static generateStoreListItem (store, onclick) {
         let storeListItem = document.createElement('div')
         storeListItem.className = 'li_store'
