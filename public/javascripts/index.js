@@ -9,7 +9,7 @@ const $ = (q) => document.querySelector(q),
 let map, stores, tags, categories;
 
 const initMap = () => {
-    map = new Map($('#map'))
+    map = new Map($('#map .leaflet-map'))
 }
 
 const initStore = async () => {
@@ -210,9 +210,20 @@ const registerServiceWorker = (e) => {
     }
 }
 
+const checkInternet = () => {
+    if (!navigator.onLine) {
+        $('#offline').classList.add('active')
+    }
+    window.addEventListener('online', (e) => {
+        location.reload()
+    })
+}
+
 window.onload = async () => {
+    registerServiceWorker()
+    checkInternet()
     await initMap()
     await initStore()
+    $('#map .load').style.display = 'none'
     await initMenu()
-    registerServiceWorker()
 }

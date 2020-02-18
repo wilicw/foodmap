@@ -1,11 +1,8 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
-workbox.routing.registerRoute(
-    /index\.html/,
-    workbox.strategies.networkFirst({
-        cacheName: 'workbox:html',
-    })
-);
+workbox.precaching.precacheAndRoute([
+    {url:'/index.html', revision: 1}
+])
 
 workbox.routing.registerRoute(
     /.*\.(?:js|css)/,

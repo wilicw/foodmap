@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#fcfcfc">
     <title>大安食物地圖</title>
     <link rel="icon" href="images/icons/icon-192x192.png">
     <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
@@ -74,6 +75,16 @@
             </div>
         </section>
     </main>
-    <div id="map"></div>
+    <div id="map">
+        <div class="leaflet-map"></div>
+        <div class="load">
+            <svg class="circle__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle class="circle__svg-circle" cx="50" cy="50" r="45"/>
+            </svg>
+        </div>
+    </div>
+    <div id="offline">
+        <p>尚未連接 Internet</p>
+    </div>
 </body>
 </html>

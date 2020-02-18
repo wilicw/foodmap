@@ -1,5 +1,6 @@
 {
   "name": "大安食物地圖",
+  "short_name": "大安食物地圖",
   "theme_color": "#2f2f2f",
   "background_color": "#fcfcfc",
   "display": "standalone",

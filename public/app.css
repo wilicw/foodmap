@@ -224,10 +224,22 @@ header {
     margin: 25px;
     box-sizing: border-box;
     border-radius: 1em;
+    position: relative;
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
-
+#map .load {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .pricing-box {
     padding-left: 2.2em;
@@ -398,4 +410,67 @@ header {
         z-index: 1;
     }
 
+}
+
+#offline {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: 1000;
+    color: var(--primary-text);
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+#offline:not(.active) {
+    display: none;
+}
+
+.leaflet-map {
+    height: 100%;
+    width: 100%;
+}
+
+.circle__svg {
+    height: 36px;
+    width: 36px;
+    animation: 2s linear infinite both circle__svg;
+}
+
+@keyframes circle__svg {
+    0% {
+        transform: rotateZ(0deg);
+    }
+    100% {
+        transform: rotateZ(360deg);
+    }
+}
+.circle__svg-circle {
+    animation: 1.4s ease-in-out infinite both circle__svg-circle;
+    fill: transparent;
+    stroke: var(--primary-reverse-text);
+    stroke-dasharray: 285;
+    stroke-linecap: round;
+    stroke-width: 10px;
+    transform-origin: 50% 50%;
+}
+
+@keyframes circle__svg-circle {
+    0%, 25% {
+        stroke-dashoffset: 280;
+        transform: rotate(0);
+    }
+    50%, 75% {
+        stroke-dashoffset: 75;
+        transform: rotate(45deg);
+    }
+    100% {
+        stroke-dashoffset: 280;
+        transform: rotate(360deg);
+    }
 }
