@@ -3,7 +3,7 @@ class Map {
     constructor (element) {
         this.map = L.map(element);
         this.map.setView([25.03210, 121.54257], Map.getZoom())
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
             maxZoom: 19
         }).addTo(this.map)
