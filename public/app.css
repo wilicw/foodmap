@@ -122,7 +122,7 @@ header {
     padding: 0 0.4em;
 }
 
-#filter_time {
+#filter_categories {
     padding: 0 0.4em;
 }
 
@@ -178,14 +178,6 @@ header {
     border-bottom: 1px solid var(--primary-text);
 }
 
-main.store > *:not(#store) {
-    display: none;
-}
-
-main:not(.store) #store {
-    display: none;
-}
-
 #store_title {
     display: flex;
     align-items: center;
@@ -209,6 +201,23 @@ main:not(.store) #store {
     opacity: 0.86;
 }
 
+#store_menu_title {
+    font-size: 16px;
+    margin: 1.2em 2.2em;
+    opacity: 0.86;
+}
+
+#toggle_store_menu {
+    font-size: 18px;
+    display: block;
+    width: calc(100% - 76px);
+    box-sizing: border-box;
+    padding: 0.7em;
+    margin: 1em 38px;
+    border-radius: 0.3rem;
+    border: 1px solid var(--primary-text);
+}
+
 #map {
     height: calc(100% - 50px);
     width: calc(100% - 360px);
@@ -218,7 +227,80 @@ main:not(.store) #store {
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
-@media (max-width: 420px) {
+
+
+.pricing-box {
+    padding-left: 2.2em;
+    padding-right: 2.2em;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.items-list {
+    padding: 0;
+    list-style-type: none;
+}
+
+.items-list li {
+    padding: 12px 0;
+    width: 100%;
+    text-align: left;
+}
+
+.items-list li:not(:last-of-type) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.price_label {
+    float: right;
+    display: inline-block;
+    width: 40px;
+    text-align: center;
+}
+
+.lighter {
+    color: #888888;
+}
+
+#store_menu {
+    height: 70%;
+    scrollbar-width: none;
+    overflow: auto;
+}
+
+
+#store {
+    height: 100%;
+}
+
+
+@media (min-width: 420px) {
+
+
+    main.store > *:not(#store) {
+        display: none;
+    }
+
+    main:not(.store) #store {
+        display: none;
+    }
+
+    #store:not(.empty) #toggle_store_menu {
+        display: none;
+    }
+
+    #store.empty #toggle_store_menu {
+        padding: 0.4em;
+        cursor: default;
+    }
+
+    #store.empty #toggle_store_menu ~ * {
+        display: none;
+    }
+
+}
+
+@media (max-width: 419px) {
 
     body {
         flex-direction: column;
@@ -245,7 +327,7 @@ main:not(.store) #store {
         height: 55px;
     }
 
-    main:not(.active):not(.search) section,
+    main:not(.active):not(.search) section:not(#store),
     main:not(.active):not(.search) .divider {
         display: none;
     }
@@ -270,6 +352,41 @@ main:not(.store) #store {
     #clear_restaurant_name:not(.active) {
         display: block;
         margin-right: 0.6em;
+    }
+
+    main #store {
+        height: 180px;
+        width: 100%;
+        left: 0;
+        bottom: -180px;
+        position: fixed;
+        background: var(--primary);
+        border-radius: 0.3em;
+        transition-duration: 80ms;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        display: flex;
+        flex-direction: column;
+    }
+
+    main.store #store {
+        bottom: 0;
+    }
+
+    #store.active {
+        height: auto;
+    }
+
+    #store.active #toggle_store_menu {
+        display: none;
+    }
+
+    #store:not(.active) #toggle_store_menu ~ * {
+        display: none;
+    }
+
+    #store_menu {
+        max-height: calc(80vh - 160px);
+        flex-grow: 1;
     }
 
     #map {

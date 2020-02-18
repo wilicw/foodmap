@@ -10,6 +10,10 @@ class Store {
         return (await fetch('api/types')).json()
     }
 
+    static async fetchCategoriesList () {
+        return (await fetch('api/categories')).json()
+    }
+
     static async fetchStoreDetails (id) {
         return (await fetch(`api/store/${id}`)).json()
     }
@@ -48,16 +52,13 @@ class Filter {
             maxPriceLevel: !advFilter ? 3 : (
                 ($('.price_level_button.active') &&
                     $('.price_level_button.active').innerText.length) || 3),
-            time: !advFilter ? ['早餐','午餐','晚餐'] : ((() => {
-                let list = []
-                $$('.time_button').forEach((button) => {
-                    if (button.classList.contains('active')) {
-                        list.push(button.innerText)
-                    }
+            selectedCategories: (() => {
+                let checkedCategories = []
+                $$('.category_button').forEach((categorieCheckbox) => {
+                    if (categorieCheckbox.classList.contains('active')) checkedCategories.push(categorieCheckbox.innerText)
                 })
-                if (!list.length) list = ['早餐','午餐','晚餐']
-                return list
-            })()),
+                return checkedCategories
+            })(),
             selectedTags: (() => {
                 let checkedTags = []
                 $$('.li_tag').forEach((tagCheckbox) => {
@@ -86,8 +87,11 @@ class Filter {
     }
 
     static filterTags (match, store) {
-        if (!match.length) return true
-        return match.every((tag) => store.type.includes(tag))
+        let matches = false
+        store.type.forEach((tag) => {
+            if (match.includes(tag)) matches = true
+})
+        return matches
     }
 
     static applyFilter (list) {
@@ -95,11 +99,15 @@ class Filter {
         let filtered = {}
         Store.forEach(list, (store) => {
             console.log(store.name,rules)
+            let isMatchName = this.filterRestaurantName(rules.restaurantName, store)
+            let isMatchPriceLevel = this.filterPriceLevel(rules.maxPriceLevel, store)
+            let isMatchCategories = this.filterCategories(rules.selectedCategories, store) || !rules.selectedCategories.length
+            let isMatchTags = this.filterTags(rules.selectedTags, store) || !rules.selectedTags.length
             if (
-                this.filterRestaurantName(rules.restaurantName, store) &&
-                this.filterPriceLevel(rules.maxPriceLevel, store) &&
-                this.filterCategories(rules.time, store) &&
-                this.filterTags(rules.selectedTags, store)
+                isMatchName &&
+                isMatchPriceLevel &&
+                isMatchTags &&
+                isMatchCategories
             ) filtered[store._id] = store
         })
         return filtered
