@@ -479,3 +479,23 @@ header {
     font-size: 14px;
     text-align: center;
 }
+
+#store_loading {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#store:not(.loading) #store_loading {
+    display: none;
+}
+
+#store.loading #store_loading ~ * {
+    display: none;
+}
+
+#store_loading .circle__svg-circle {
+    stroke: var(--primary-text);
+}
