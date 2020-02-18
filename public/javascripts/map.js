@@ -5,7 +5,7 @@ class Map {
         this.map.setView([25.03210, 121.54257], Map.getZoom())
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
-            maxZoom: 19
+            maxZoom: 21
         }).addTo(this.map)
     }
 
