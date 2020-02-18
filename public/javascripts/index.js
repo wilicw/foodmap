@@ -81,7 +81,8 @@ const initStoreList = () => {
     const storeList = $('#store_list'),
           menu = $('main')
     Store.forEach(stores, (store) => {
-        storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
+        storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem, e) => {
+            e.stopPropagation()
             menu.classList.remove('search')
             storeInfo(storeListItem.id)
         }))

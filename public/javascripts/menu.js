@@ -22,7 +22,7 @@ class Menu {
         storeListItem.insertAdjacentHTML('beforeend',
             `<p class="li_store_name">${store.name}</p>` +
             `<span class="li_about">${store.score}分 · ${store.priceLevelDescription}價位</span>`)
-        storeListItem.addEventListener('click', function (e) {onclick(this)})
+        storeListItem.addEventListener('click', function (e) {onclick(this, e)})
         return storeListItem
     }
 

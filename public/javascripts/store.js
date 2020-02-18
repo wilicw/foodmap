@@ -98,7 +98,6 @@ class Filter {
         let rules = this.getFilterRules()
         let filtered = {}
         Store.forEach(list, (store) => {
-            console.log(store.name,rules)
             let isMatchName = this.filterRestaurantName(rules.restaurantName, store)
             let isMatchPriceLevel = this.filterPriceLevel(rules.maxPriceLevel, store)
             let isMatchCategories = this.filterCategories(rules.selectedCategories, store) || !rules.selectedCategories.length
