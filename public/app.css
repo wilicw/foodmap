@@ -177,7 +177,6 @@ header {
     border-bottom: 1px solid var(--primary-text);
     border-color: #AAAAAA;
     margin: 1em;
-    margin-bottom: 0;
 }
 
 #store_title {

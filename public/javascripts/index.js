@@ -16,7 +16,7 @@ const initStore = async () => {
     stores = await Store.fetchList()
     const onMarkerClick = (e) => {
         e.originalEvent.stopPropagation()
-        map.map.setView(e.target.getLatLng(), 19)
+        centerMarker([e.target.getLatLng().lat, e.target.getLatLng().lng])
         menu.classList.remove('search')
         let id = e.target.options._id
         storeInfo(id)
@@ -27,6 +27,12 @@ const initStore = async () => {
         stores[store._id].marker = Map.generateMarker(store, onMarkerClick)
         map.addMarker(store.marker)
     })
+}
+
+
+const centerMarker = (location) => {
+    let point = new L.LatLng(location[0], location[1])
+    map.map.setView(point, 20)
 }
 
 const storeInfo = async (id) => {
@@ -44,6 +50,7 @@ const storeInfo = async (id) => {
     $('#store').classList.remove('active')
     $('#store').classList[stores[id].menu ? 'remove' : 'add']('empty')
     $('#toggle_store_menu').innerText = stores[id].menu ? '菜單' : '暫無菜單'
+    centerMarker(store.location)
     if (stores[id].menu) $('#store_menu').appendChild(Menu.processStoreMenuData(stores[id]))
 }
 
