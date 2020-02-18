@@ -16,6 +16,7 @@ const initStore = async () => {
     stores = await Store.fetchList()
     const onMarkerClick = (e) => {
         e.originalEvent.stopPropagation()
+        map.map.setView(e.target.getLatLng(), 19)
         menu.classList.remove('search')
         let id = e.target.options._id
         storeInfo(id)
