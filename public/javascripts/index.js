@@ -1,4 +1,3 @@
-import { smoothScroll } from "./scroll.js";
 import { Map } from "./map.js";
 import { Store, Filter } from "./store.js";
 import { Menu } from "./menu.js";
@@ -58,7 +57,6 @@ const Search = () => {
         }))
         store.marker.addTo(map.map)
     })
-    smoothScroll('map')
 }
 
 const initTagList = async () => {
