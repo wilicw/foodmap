@@ -30,12 +30,16 @@ const initStore = async () => {
 }
 
 const storeInfo = async (id) => {
-    let store = stores[id]
-    let full = await Store.fetchStoreDetails(store._id)
-    stores[id] = {extended: true, ...stores[id], ...full}
+    let store = stores[id], full
+    if (!stores[id].extended) {
+        $('main').classList.add('store')
+        $('#store').classList.add('loading')
+        full = await Store.fetchStoreDetails(store._id)
+        $('#store').classList.remove('loading')
+        stores[id] = {extended: true, ...stores[id], ...full}
+    }
     $('#store_name').innerText = store.name
     $('#store_about').innerText = `${store.score}分 · ${store.priceLevelDescription}價位`
-    $('main').classList.add('store')
     $('#store_menu').innerHTML = ''
     $('#store').classList.remove('active')
     $('#store').classList[full.menu ? 'remove' : 'add']('empty')
