@@ -50,6 +50,25 @@ router.get('/store/:store', (req, res, next) => {
   })
 })
 
+/* GET seats by store id */
+router.get('/seats/:store', (req, res, next) => {
+  const store_id = sanitize(req.params.store)
+  const store = client.db(process.env.DB).collection("stores").findOne({
+    _id: new ObjectId(store_id)
+  }, (err, doc) => {
+    if (!doc.seats) {
+      res.send(JSON.stringify({"status": 404, "msg": "No seats data found."}))
+      return
+    }
+    let seats = doc.seats
+    let recentSeatsData = seats.sort((a, b) => a.timestamp > b.timestamp)
+    if (recentSeatsData.length > 5) {
+      recentSeatsData = recentSeatsData.slice(0,5)
+    }
+    res.send(JSON.stringify(recentSeatsData))
+  })
+})
+
 /* GET food types */
 router.get('/types', (req, res, next) => {
   const stores = client.db(process.env.DB).collection("stores").find({})
@@ -82,7 +101,7 @@ router.post('/score', (req, res, next) => {
   const now = new Date().getTime()
   const store_id = sanitize(data.store)
   const user = sanitize(data.user)
-  const score = sanitize(data.score)  
+  const score = sanitize(data.score)
   let stores = client.db(process.env.DB).collection("stores")
   
   stores.updateOne(
@@ -102,6 +121,27 @@ router.post('/score', (req, res, next) => {
         scores: {
           user : user,
           score : score,
+          timestamp : now
+        }
+      }
+    }
+  )
+  res.send("200")
+})
+
+/* POST uploads recent seats information */
+router.post('/seats/:store', (req, res, next) => {
+  const data = req.body
+  const now = new Date().getTime()
+  const store_id = sanitize(req.params.store)
+  const seats = sanitize(data.seats)
+  let stores = client.db(process.env.DB).collection("stores")
+  stores.updateOne(
+    {_id: new ObjectId(store_id)},
+    {
+      $push: {
+        seats: {
+          seats : seats,
           timestamp : now
         }
       }
