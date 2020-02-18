@@ -31,8 +31,8 @@ const initStore = async () => {
 
 const storeInfo = async (id) => {
     let store = stores[id], full
+    $('main').classList.add('store')
     if (!stores[id].extended) {
-        $('main').classList.add('store')
         $('#store').classList.add('loading')
         full = await Store.fetchStoreDetails(store._id)
         $('#store').classList.remove('loading')
