@@ -90,7 +90,7 @@ class Filter {
         let matches = false
         store.type.forEach((tag) => {
             if (match.includes(tag)) matches = true
-        })
+})
         return matches
     }
 

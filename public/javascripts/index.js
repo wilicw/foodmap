@@ -12,11 +12,12 @@ const initMap = () => {
     map = new Map($('#map'))
 }
 
-window.stores = () => console.log(stores)
-
 const initStore = async () => {
+    const menu = $('main')
     stores = await Store.fetchList()
     const onMarkerClick = (e) => {
+        e.originalEvent.stopPropagation()
+        menu.classList.remove('search')
         let id = e.target.options._id
         storeInfo(id)
     }
@@ -36,6 +37,9 @@ const storeInfo = async (id) => {
     $('#store_about').innerText = `${store.score}分 · ${store.priceLevelDescription}價位`
     $('main').classList.add('store')
     $('#store_menu').innerHTML = ''
+    $('#store').classList.remove('active')
+    $('#store').classList[full.menu ? 'remove' : 'add']('empty')
+    $('#toggle_store_menu').innerText = full.menu ? '菜單' : '暫無菜單'
     $('#store_menu').appendChild(Menu.processStoreMenuData(stores[id]))
 }
 
@@ -45,6 +49,7 @@ const Search = () => {
     while (storeList.firstChild) storeList.removeChild(storeList.firstChild)
     Store.forEach(Filter.applyFilter(stores), (store) => {
         storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
+            $('main').classList.remove('search')
             storeInfo(storeListItem.id)
         }))
         store.marker.addTo(map.map)
@@ -69,9 +74,11 @@ const initCategoriesList = async () => {
 }
 
 const initStoreList = () => {
-    const storeList = $('#store_list')
+    const storeList = $('#store_list'),
+          menu = $('main')
     Store.forEach(stores, (store) => {
         storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
+            menu.classList.remove('search')
             storeInfo(storeListItem.id)
         }))
     })
@@ -122,6 +129,7 @@ const initToggleSearch = () => {
     const menu = $('main')
     toggleMenu.addEventListener('click', (e) => {
         let prevStat =  menu.classList.contains('search')
+        menu.classList.remove('store')
         menu.classList[prevStat ? 'remove' : 'add']('search')
     })
 }
@@ -152,8 +160,29 @@ const initClearFilter = () => {
 const initCloseStore = () => {
     const closeStore = $('#close_store')
     const main = $('main')
+    const store = $('#store')
     closeStore.addEventListener('click', (e) => {
         main.classList.remove('store')
+        store.classList.remove('active')
+    })
+}
+
+const initStoreMenu = () => {
+    const store = $('#store'),
+          main = $('main'),
+          toggle = $('#toggle_store_menu'),
+          menu = $('#store_menu')
+    store.addEventListener('click', (e) => {
+        e.stopPropagation()
+    })
+    window.addEventListener('click', (e) => {
+        main.classList.remove('store')
+        store.classList.remove('active')
+    })
+    toggle.addEventListener('click', (e) => {
+        if (menu.firstChild) {
+            store.classList.add('active')
+        }
     })
 }
 
@@ -165,6 +194,7 @@ const initMenuControl = () => {
     initPriceLevel()
     initClearFilter()
     initCloseStore()
+    initStoreMenu()
 }
 
 const initMenu = async () => {
