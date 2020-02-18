@@ -28,7 +28,7 @@ class Map {
 
     static generateIcon (color) {
         return new L.Icon({
-            iconUrl: `marker/marker-icon-2x-${color}.png`,
+            iconUrl: `images/markers/marker-icon-2x-${color}.png`,
             iconSize: [25, 41],
             iconAnchor: [12, 41],
             popupAnchor: [1, -34]

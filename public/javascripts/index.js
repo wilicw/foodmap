@@ -204,8 +204,15 @@ const initMenu = async () => {
     initStoreList()
 }
 
+const registerServiceWorker = (e) => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+    }
+}
+
 window.onload = async () => {
     await initMap()
     await initStore()
     await initMenu()
+    registerServiceWorker()
 }
