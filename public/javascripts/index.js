@@ -179,8 +179,12 @@ const initStoreMenu = () => {
         e.stopPropagation()
     })
     window.addEventListener('click', (e) => {
-        main.classList.remove('store')
-        store.classList.remove('active')
+        if (Array.from(store.classList).includes('active')) {
+            store.classList.remove('active')
+        } else {
+            main.classList.remove('store')
+            store.classList.remove('active')
+        }        
     })
     toggle.addEventListener('click', (e) => {
         if (menu.firstChild) {
