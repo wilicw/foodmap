@@ -42,9 +42,9 @@ const storeInfo = async (id) => {
     $('#store_about').innerText = `${store.score}分 · ${store.priceLevelDescription}價位`
     $('#store_menu').innerHTML = ''
     $('#store').classList.remove('active')
-    $('#store').classList[full.menu ? 'remove' : 'add']('empty')
-    $('#toggle_store_menu').innerText = full.menu ? '菜單' : '暫無菜單'
-    $('#store_menu').appendChild(Menu.processStoreMenuData(stores[id]))
+    $('#store').classList[stores[id].menu ? 'remove' : 'add']('empty')
+    $('#toggle_store_menu').innerText = stores[id].menu ? '菜單' : '暫無菜單'
+    if (stores[id].menu) $('#store_menu').appendChild(Menu.processStoreMenuData(stores[id]))
 }
 
 const Search = () => {
