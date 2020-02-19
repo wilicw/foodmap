@@ -180,6 +180,7 @@ header {
 }
 
 #store_title {
+    width: 360px;
     display: flex;
     align-items: center;
 }
