@@ -53,7 +53,7 @@ class Menu {
             categoriesHTML.appendChild(itemList)
             menuHTML.appendChild(categoriesHTML)
         })
-        let claim = `<p class="menu_claim">菜單僅供參考，實際以店家公告為主</p>`
+        let claim = `<p class="menu_claim lighter">菜單僅供參考，實際以店家公告為主</p>`
         menuHTML.insertAdjacentHTML('beforeend', claim)
         return menuHTML
     }

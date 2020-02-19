@@ -1,4 +1,3 @@
-import { smoothScroll } from "./scroll.js";
 import { Map } from "./map.js";
 import { Store, Filter } from "./store.js";
 import { Menu } from "./menu.js";
@@ -17,6 +16,7 @@ const initStore = async () => {
     stores = await Store.fetchList()
     const onMarkerClick = (e) => {
         e.originalEvent.stopPropagation()
+        centerMarker([e.target.getLatLng().lat, e.target.getLatLng().lng])
         menu.classList.remove('search')
         let id = e.target.options._id
         storeInfo(id)
@@ -27,6 +27,12 @@ const initStore = async () => {
         stores[store._id].marker = Map.generateMarker(store, onMarkerClick)
         map.addMarker(store.marker)
     })
+}
+
+
+const centerMarker = (location) => {
+    let point = new L.LatLng(location[0], location[1])
+    map.map.setView(point, 20)
 }
 
 const storeInfo = async (id) => {
@@ -44,6 +50,7 @@ const storeInfo = async (id) => {
     $('#store').classList.remove('active')
     $('#store').classList[stores[id].menu ? 'remove' : 'add']('empty')
     $('#toggle_store_menu').innerText = stores[id].menu ? '菜單' : '暫無菜單'
+    centerMarker(store.location)
     if (stores[id].menu) $('#store_menu').appendChild(Menu.processStoreMenuData(stores[id]))
 }
 
@@ -58,7 +65,6 @@ const Search = () => {
         }))
         store.marker.addTo(map.map)
     })
-    smoothScroll('map')
 }
 
 const initTagList = async () => {
@@ -181,8 +187,12 @@ const initStoreMenu = () => {
         e.stopPropagation()
     })
     window.addEventListener('click', (e) => {
-        main.classList.remove('store')
-        store.classList.remove('active')
+        if (Array.from(store.classList).includes('active')) {
+            store.classList.remove('active')
+        } else {
+            main.classList.remove('store')
+            store.classList.remove('active')
+        }        
     })
     toggle.addEventListener('click', (e) => {
         if (menu.firstChild) {
