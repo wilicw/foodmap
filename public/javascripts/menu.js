@@ -85,11 +85,24 @@ class Menu {
         return headerLabel
     }
 
+    static menuItemHoverEffect (e) {
+        if (Array.from(e.srcElement.classList).includes('active')) {
+            e.srcElement.classList.remove('active')
+        } else {
+            e.srcElement.classList.add('active')
+        }
+    }
+
     static generateMenuItem (item) {
         let itemHTML = document.createElement('li')
+        let newLine = '\u000D\u000A'
+        if (item.description.length) {
+            itemHTML.setAttribute('data-description', `備註: ${item.description}`)
+            itemHTML.addEventListener('click', this.menuItemHoverEffect)
+        }
         itemHTML.innerText = item.name
         let itemFormat = item.format
-        if (itemFormat === 'drink' || itemFormat === 'main') {
+        if (itemFormat === 'drink' || itemFormat === 'main' | itemFormat === 'set') {
             item.price.reverse().map(price => {
                 let price_label = document.createElement('span')
                 price_label.className = 'price_label'
@@ -102,6 +115,22 @@ class Menu {
             price_label.className = 'price_label'
             price_label.innerText = item.price
             itemHTML.appendChild(price_label)
+        }
+        if (itemFormat === 'set') {
+            let description = itemHTML.getAttribute('data-description')
+            let subItemText = `${newLine}主餐：`
+            item.items.map(subItem => {
+                subItemText += newLine + "  ．" + subItem
+            })
+            itemHTML.setAttribute('data-description', `${description}${subItemText}`)
+        } else if (itemFormat === 'drink') {
+            let description = itemHTML.getAttribute('data-description')
+            description = description ? description + newLine : ""
+            if (item.types.length) {
+                let additionalText = "溫度：" + item.types.join(" / ")
+                itemHTML.setAttribute('data-description', `${description}${additionalText}`)
+                itemHTML.addEventListener('click', this.menuItemHoverEffect)
+            }
         }
         return itemHTML
     }
