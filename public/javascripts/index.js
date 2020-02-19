@@ -36,22 +36,24 @@ const centerMarker = (location) => {
 }
 
 const storeInfo = async (id) => {
-    let store = stores[id], full
+    let store = stores[id]
+    centerMarker(store.location)
     $('main').classList.add('store')
-    if (!stores[id].extended) {
+    if (!store.extended) {
         $('#store').classList.add('loading')
-        full = await Store.fetchStoreDetails(store._id)
+        let full = await Store.fetchStoreDetails(store._id)
         $('#store').classList.remove('loading')
-        stores[id] = {extended: true, ...stores[id], ...full}
+        stores[id] = {extended: true, ...store, ...full}
+        store = stores[id]
     }
     $('#store_name').innerText = store.name
     $('#store_about').innerText = `${store.score}分 · ${store.priceLevelDescription}價位`
     $('#store_menu').innerHTML = ''
     $('#store').classList.remove('active')
-    $('#store').classList[stores[id].menu ? 'remove' : 'add']('empty')
-    $('#toggle_store_menu').innerText = stores[id].menu ? '菜單' : '暫無菜單'
-    centerMarker(store.location)
-    if (stores[id].menu) $('#store_menu').appendChild(Menu.processStoreMenuData(stores[id]))
+    let hasMenu = store.menu && store.menu.length
+    $('#store').classList[ hasMenu ? 'remove' : 'add']('empty')
+    $('#toggle_store_menu').innerText = hasMenu ? '菜單' : '暫無菜單'
+    if (hasMenu) $('#store_menu').appendChild(Menu.processStoreMenuData(store))
 }
 
 const Search = () => {
