@@ -4,7 +4,7 @@ class Map {
         this.map = L.map(element);
         this.map.setView([25.03210, 121.54257], Map.getZoom())
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-            attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
+            attribution: `Made by <a href="https://dacsc.club">DACSC</a> Source code on <a href="https://github.com/wilicw/foodmap">Github</a>`,
             maxZoom: 21
         }).addTo(this.map)
     }
