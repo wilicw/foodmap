@@ -1,5 +1,5 @@
 ## Foodmap
-> 🍜 A map shows the stores and restaurants around TAIVS.
+> 🍜 A map that shows the stores and restaurants around TAIVS.
 
 ## Project setup
 
@@ -13,7 +13,7 @@ $ yarn start
 
 ## Contribute
 
-Please do contribute! Issues and pull requests are welcome.
+Please do contribute! Issues and pull requests are welcomed.
 
-Thank you for your help improving this project!
+Thank you for helping to improve this project!
 
