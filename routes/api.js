@@ -30,16 +30,6 @@ router.get('/stores', (req, res, next) => {
   })
 })
 
-/* GET menu by store id */
-router.get('/menu/:store', (req, res, next) => {
-  const store_id = sanitize(req.params.store)
-  const store = client.db(process.env.DB).collection("stores").findOne({
-    _id: new ObjectId(store_id)
-  }, (err, doc) => {
-    res.send(JSON.stringify(doc.menu ? doc.menu : {"status": 404, "msg": "No menu in this store."}))
-  })
-})
-
 /* GET detial by store id */
 router.get('/store/:store', (req, res, next) => {
   const store_id = sanitize(req.params.store)
@@ -56,7 +46,7 @@ router.get('/seats/:store', (req, res, next) => {
   const store = client.db(process.env.DB).collection("stores").findOne({
     _id: new ObjectId(store_id)
   }, (err, doc) => {
-    if (!doc.seats) {
+    if (!doc.seats || !doc.seats.length) {
       res.send(JSON.stringify({"status": 404, "msg": "No seats data found."}))
       return
     }
