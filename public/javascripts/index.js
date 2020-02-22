@@ -150,10 +150,10 @@ const initFilter = async () => {
     const elmsPriceLevel = document.getElementsByName('price_level')
     elmsPriceLevel.forEach((elmPriceLevel) => {
         elmPriceLevel.addEventListener('click', function (e) {
-            Search()
             const elmPrevActive = document.querySelector('[name=price_level].active')
             if (elmPrevActive) elmPrevActive.classList.remove('active')
             this.classList.add('active')
+            Search()
         })
     })
     const elmCategoryList = document.getElementsByClassName('filter_category')[0],
@@ -162,8 +162,8 @@ const initFilter = async () => {
           types = await StoreList.fetchTypeList()
     // TODO: func:onclick - move selected items to the first
     const onclick = (e) => {
-        Search()
         e.target.classIf('active')
+        Search()
     }
     categories.forEach((category) => elmCategoryList.appendChild(Menu.createCategoryItem(category, onclick)))
     types.forEach((type) => elmTypeList.appendChild(Menu.createTypeItem(type, onclick)))

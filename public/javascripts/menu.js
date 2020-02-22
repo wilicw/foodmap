@@ -59,7 +59,7 @@ class Menu {
 
     static createTypeItem (type, onclick) {
         let elmType = document.createElement('button')
-        elmType.name = 'category'
+        elmType.name = 'type'
         elmType.onclick = onclick
         elmType.insertAdjacentText('afterbegin', type)
         return elmType

@@ -75,7 +75,7 @@ class Filter {
             selectedType: (() => {
                 let types = []
                 elmsType.forEach((elmType) => {
-                    if (elmType.classList.contains('active')) tags.push(elmType.innerText)
+                    if (elmType.classList.contains('active')) types.push(elmType.innerText)
                 })
                 return types
             })()
@@ -88,10 +88,12 @@ class Filter {
     }
 
     static filterPriceLevel (match, store) {
+        if (match.length === 0) return true
         return (store.price_level.length <= match)
     }
 
     static filterCategories (match, store) {
+        if (match.length === 0) return true
         let matches = false
         store.categories.forEach((category) => {
             if (match.includes(category)) matches = true
@@ -99,28 +101,28 @@ class Filter {
         return matches
     }
 
-    static filterTags (match, store) {
+    static filterTypes (match, store) {
+        if (match.length === 0) return true
         let matches = false
-        store.type.forEach((tag) => {
-            if (match.includes(tag)) matches = true
+        store.type.forEach((type) => {
+            if (match.includes(type)) matches = true
         })
         return matches
     }
 
     static applyFilter (list) {
         let rules = this.getFilterRules()
+        console.log(rules)
         let filtered = new StoreList()
         list.forEach((store) => {
             let isMatchName = this.filterRestaurantName(rules.restaurantName, store)
             let isMatchPriceLevel = this.filterPriceLevel(rules.maxPriceLevel, store)
-            let isMatchCategories = this.filterCategories(rules.selectedCategories, store) || !rules.selectedCategories.length
-            let isMatchTags = this.filterTags(rules.selectedType, store) || !rules.selectedType.length
-            if (
-                isMatchName &&
-                isMatchPriceLevel &&
-                isMatchTags &&
-                isMatchCategories
-            ) filtered.list[store._id] = store
+            let isMatchCategories = this.filterCategories(rules.selectedCategories, store)
+            let isMatchTypes = this.filterTypes(rules.selectedType, store)
+            if (isMatchName && isMatchPriceLevel && isMatchTypes && isMatchCategories) {
+                console.log(store.name)
+                filtered.list[store._id] = store
+            }
         })
         return filtered
     }

@@ -1,9 +1,9 @@
 html {
     height: 100%;
-    --primary: #fffdfa;
-    --primary-revs: #2d2320;
+    --primary: #f8fffd;
+    --primary-revs: #112211;
     --primary-border: #d0d0d0;
-    --secondary: #d8821c;
+    --secondary: #008404;
     --secondary-revs: #fefefe;
     --darken: rgba(0, 0, 0, 0.12);
     --shadow-small: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -369,6 +369,8 @@ main {
     [data-view=map] { left: -100vw; }
     [data-view=user] { left: -200vw; }
 
+
+    [data-view=explore] #search,
     [data-view=map] #search {
         height: 50px;
         width: calc(100vw - 40px);
@@ -398,6 +400,11 @@ main {
 
     #toggle_filter span {
         display: none;
+    }
+
+    .menu_header {
+        margin-bottom: 20px;
+        visibility: hidden;
     }
 
     .menu_title {
