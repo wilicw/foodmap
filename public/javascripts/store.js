@@ -1,12 +1,50 @@
-class Store {
+class StoreList {
 
-    static async fetchList () {
-        let output = {}, raw_list = await (await fetch('api/stores')).json()
-        raw_list.forEach((store) => {output[store._id] = store})
-        return output
+    constructor () {
+        this.list = {}
     }
 
-    static async fetchTagList () {
+    fetchData (path) {
+        return new Promise(async (resolve, reject) => {
+            (await fetch(path)).json().then((raw) => {
+                raw.forEach((store) => {
+                    store.avgScore = StoreList.avgScore(store.scores)
+                    store.plString = StoreList.priceLevel(store.price_level, 'string')
+                    this.list[store._id] = store
+                })
+                resolve()
+            }).catch((error) => {
+                this.list = this.list || {}
+                reject(error)
+            })
+        })
+    }
+
+    forEach (method) {
+        Object.entries(this.list).forEach((entry) => method(entry[1]))
+    }
+
+    static avgScore (scores) {
+        let sum = 0
+        scores.forEach((score) => {sum += score.score})
+        return (sum / scores.length) || 0
+    }
+
+    static priceLevel (value = 0, format = 'symbol') {
+        value = (typeof value === 'string') ? value.length : value
+        let text = {
+            number: [0, 1, 2, 3],
+            symbol: ['', '$', '$$', '$$$'],
+            string: ['未知價位', '低價位', '中價位', '高價位']
+        }
+        return text[format] ? text[format][value] : false
+    }
+
+    static async fetchStoreData (store) {
+        return await (await fetch(`api/store/${store._id}`)).json()
+    }
+
+    static async fetchTypeList () {
         return (await fetch('api/types')).json()
     }
 
@@ -14,57 +52,32 @@ class Store {
         return (await fetch('api/categories')).json()
     }
 
-    static async fetchStoreDetails (id) {
-        return (await fetch(`api/store/${id}`)).json()
-    }
-
-    static getAverageScore (scores) {
-        let sum = 0
-        if (!scores.length) return '未評'
-        scores.map((score) => { sum += score.score })
-        return sum / scores.length
-    }
-
-    static describePriceLevel (price_level) {
-        if (price_level === '$') return '低'
-        if (price_level === '$$') return '中'
-        if (price_level === '$$$') return '高'
-        return '未知'
-    }
-
-    static forEach (storeList, handler) {
-        for (let entry of Object.entries(storeList)) {
-            handler(entry[1])
-        }
-    }
-
 }
 
 class Filter {
 
     static getFilterRules () {
-        const $ = (q) => document.querySelector(q),
-            $$ = (q) => document.querySelectorAll(q)
-        const advFilter = $('#toggle_filter').classList.contains('active')
+        const elmPriceLevel = document.querySelector('[name=price_level].active'),
+            elmsCategory = document.getElementsByName('category'),
+            elmsType = document.getElementsByName('type')
         return {
-            advFilter: advFilter,
-            restaurantName: $('#restaurant_name').value,
-            maxPriceLevel: !advFilter ? 3 : (
-                ($('.price_level_button.active') &&
-                    $('.price_level_button.active').innerText.length) || 3),
-            selectedCategories: (() => {
-                let checkedCategories = []
-                $$('.category_button').forEach((categorieCheckbox) => {
-                    if (categorieCheckbox.classList.contains('active')) checkedCategories.push(categorieCheckbox.innerText)
-                })
-                return checkedCategories
+            restaurantName: document.getElementById('store_name').value,
+            maxPriceLevel: (() => {
+                return elmPriceLevel ? elmPriceLevel.innerText.length : 3
             })(),
-            selectedTags: (() => {
-                let checkedTags = []
-                $$('.li_tag').forEach((tagCheckbox) => {
-                    if (tagCheckbox.classList.contains('active')) checkedTags.push(tagCheckbox.innerText)
+            selectedCategories: (() => {
+                let categories = []
+                elmsCategory.forEach((elmCategory) => {
+                    if (elmCategory.classList.contains('active')) categories.push(elmCategory.innerText)
                 })
-                return checkedTags
+                return categories
+            })(),
+            selectedType: (() => {
+                let types = []
+                elmsType.forEach((elmType) => {
+                    if (elmType.classList.contains('active')) tags.push(elmType.innerText)
+                })
+                return types
             })()
         }
     }
@@ -90,28 +103,29 @@ class Filter {
         let matches = false
         store.type.forEach((tag) => {
             if (match.includes(tag)) matches = true
-})
+        })
         return matches
     }
 
     static applyFilter (list) {
         let rules = this.getFilterRules()
-        let filtered = {}
-        Store.forEach(list, (store) => {
+        let filtered = new StoreList()
+        list.forEach((store) => {
             let isMatchName = this.filterRestaurantName(rules.restaurantName, store)
             let isMatchPriceLevel = this.filterPriceLevel(rules.maxPriceLevel, store)
             let isMatchCategories = this.filterCategories(rules.selectedCategories, store) || !rules.selectedCategories.length
-            let isMatchTags = this.filterTags(rules.selectedTags, store) || !rules.selectedTags.length
+            let isMatchTags = this.filterTags(rules.selectedType, store) || !rules.selectedType.length
             if (
                 isMatchName &&
                 isMatchPriceLevel &&
                 isMatchTags &&
                 isMatchCategories
-            ) filtered[store._id] = store
+            ) filtered.list[store._id] = store
         })
         return filtered
     }
 
 }
 
-export { Store, Filter }
+
+export { StoreList, Filter }

@@ -1,95 +1,109 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-    <meta http-equiv="Accept" content="*">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="theme-color" content="#fcfcfc">
     <title>大安食物地圖</title>
-    <link rel="icon" href="images/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
-    <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script async src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
     <script async defer src="https://code.iconify.design/1/1.0.4/iconify.min.js"></script>
-    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="index.css">
     <script async defer src="javascripts/index.js" type="module"></script>
 </head>
 <body>
-    <main>
-        <header>
-            <p id="site_title">大安食物地圖</p>
-            <button id="toggle_search">
-                <span class="iconify" data-icon="mdi:search" data-inline="false"></span>
-            </button>
-<!--            <button id="toggle_menu">-->
-<!--                <span class="iconify" data-icon="mdi:menu" data-inline="false"></span>-->
-<!--            </button>-->
-        </header>
-        <section id="search">
-            <label for="restaurant_name">
-                <input id="restaurant_name" type="text" placeholder="搜尋食物">
-                <button id="clear_restaurant_name">
-                    <span class="iconify" data-icon="mdi:close" data-inline="false"></span>
+    <main data-view="explore">
+        <div id="explore">
+            <div class="menu_header main_section">
+                <p class="menu_title">大安食物地圖</p>
+                <button class="user_toggle" data-toggle="#user"></button>
+            </div>
+            <div id="search" class="filter_section main_section">
+                <label class="store_name_wrapper" for="store_name">
+                    <button class="store_name_clear">
+                        <span class="iconify" data-icon="mdi:close" data-inline="false"></span>
+                    </button>
+                    <input id="store_name" type="text" placeholder="搜尋食物">
+                </label>
+                <button id="toggle_filter">
+                    <iconify-icon data-icon="mdi:filter-menu" data-inline="false"></iconify-icon>
+                    <span>進階搜尋</span>
                 </button>
-            </label>
-        </section>
-        <section id="filter">
-            <button id="toggle_filter">展開篩選條件</button>
-            <button id="clear_filter">清空篩選條件</button>
-            <div id="price_level">
-                <p class="filter_sec_title">最高價位</p>
-                <div id="filter_price_level">
-                    <button class="price_level_button selectable">$</button>
-                    <button class="price_level_button selectable">$$</button>
-                    <button class="price_level_button selectable">$$$</button>
+            </div>
+            <div id="filter" class="main_section main_section_tab">
+                <p class="filter_section_title">最高價位</p>
+                <div class="filter_section filter_priceLevel">
+                    <button name="price_level">$</button>
+                    <button name="price_level">$$</button>
+                    <button name="price_level">$$$</button>
+                </div>
+                <p class="filter_section_title">分類</p>
+                <div class="filter_section filter_category"></div>
+                <p class="filter_section_title">標籤</p>
+                <div class="filter_section filter_type"></div>
+            </div>
+            <div id="store_list" class="main_section main_section_tab active"></div>
+            <div id="store" class="main_section main_section_tab">
+                <div class="store_header">
+                    <p class="store_name"></p>
+                    <button class="store_close">
+                        <iconify-icon data-icon="mdi:close" data-inline="false"></iconify-icon>
+                    </button>
+                </div>
+                <p class="store_info store_priceLevel"></p>
+                <p class="store_info">
+                    <span class="store_avgScore"></span>分 ·
+                    <span class="store_numOfScore"></span>個評分
+                </p>
+                <p class="store_info store_seat_status">本店家暫無座位資訊</p>
+                <div class="store_card">
+                    <p class="store_card_title">標記當前狀態</p>
+                    <div class="store_mark_seat">
+                        <button class="store_mark_seat_button">空閒</button>
+                        <button class="store_mark_seat_button">普通</button>
+                        <button class="store_mark_seat_button">繁忙</button>
+                        <button class="store_mark_seat_button">極為繁忙</button>
+                    </div>
+                </div>
+                <div class="store_card">
+                    <p class="store_card_title">為這家餐廳評分</p>
+                    <div class="store_rate">
+                        <button class="store_score_button"><iconify-icon data-icon="mdi:star" data-inline="false"></iconify-icon></button>
+                        <button class="store_score_button"><iconify-icon data-icon="mdi:star" data-inline="false"></iconify-icon></button>
+                        <button class="store_score_button"><iconify-icon data-icon="mdi:star" data-inline="false"></iconify-icon></button>
+                        <button class="store_score_button"><iconify-icon data-icon="mdi:star" data-inline="false"></iconify-icon></button>
+                        <button class="store_score_button"><iconify-icon data-icon="mdi:star" data-inline="false"></iconify-icon></button>
+                    </div>
+                </div>
+                <div class="store_card store_menu_wrapper no_menu">
+                    <div class="store_no_menu">
+                        <p>本店家暫無菜單資訊</p>
+                    </div>
+                    <div class="store_menu">
+                        <p class="store_menu_title">菜單</p>
+                    </div>
                 </div>
             </div>
-            <div id="category">
-                <p class="filter_sec_title">類型</p>
-                <div id="filter_categories"></div>
+            <div class="main_section menu_footer">
+                <p class="claim">本網頁資訊僅供參考</p>
             </div>
-            <div id="tags">
-                <p class="filter_sec_title">標籤</p>
-                <div id="filter_tag"></div>
-            </div>
-        </section>
-        <span class="divider"></span>
-        <section id="store_list">
-<!--            <div class="message">找到${filteredList.length}項結果</div>-->
-        </section>
-        <section id="store">
-            <div id="store_loading">
-                <svg class="circle__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle class="circle__svg-circle" cx="50" cy="50" r="45"/>
-                </svg>
-            </div>
-            <div id="store_title">
-                <button id="close_store">
-                    <span class="iconify" data-icon="mdi:arrow-left" data-inline="false"></span>
-                </button>
-                <p id="store_name"></p>
-            </div>
-            <p id="store_about"></p>
-            <button id="toggle_store_menu">菜單</button>
-            <p id="store_menu_title">菜單</p>
-            <div id="store_menu">
-                <div id="store_menu_empty">暫無內容</div>
-            </div>
-        </section>
-    </main>
-    <div id="map">
-        <div class="leaflet-map"></div>
-        <div class="load">
-            <svg class="circle__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <circle class="circle__svg-circle" cx="50" cy="50" r="45"/>
-            </svg>
         </div>
-    </div>
-    <div id="offline">
-        <p>尚未連接 Internet</p>
+        <div id="map"></div>
+        <div id="user"></div>
+    </main>
+    <!-- mobile only -->
+    <div id="bottom_nav">
+        <button class="bottom_nav_button active" data-target="explore">
+            <iconify-icon data-icon="mdi:home" data-inline="false"></iconify-icon>
+        </button>
+        <button class="bottom_nav_button" data-target="map">
+            <iconify-icon data-icon="mdi:map-marker" data-inline="false"></iconify-icon>
+        </button>
+        <button class="bottom_nav_button" style="font-size: 14px;" data-target="user">
+            <iconify-icon data-icon="fa-solid:user" data-inline="false"></iconify-icon>
+        </button>
     </div>
 </body>
 </html>
