@@ -84,7 +84,7 @@ const initStore = async () => {
         elmStore.classList.add('expand')
         e.stopPropagation()
     })
-    elmStore.addEventListener('scroll', (e) => {
+    elmStore.addEventListener('touchend', (e) => {
         elmStore.classList.add('expand')
         e.stopPropagation()
     })
