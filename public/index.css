@@ -71,7 +71,8 @@ main {
     flex-grow: 1;
     opacity: 1;
     overflow: auto;
-    transition-duration: 80ms;
+    max-height: min-content;
+    transition-duration: .1s;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -449,6 +450,7 @@ main {
         height: calc(100% - 55px);
         top: 0;
         overflow: auto;
+        border-radius: 0;
     }
 
     #map.shrink {

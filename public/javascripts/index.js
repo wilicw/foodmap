@@ -18,7 +18,7 @@ const initMap = () => {
 }
 
 const storeListItemConfig = {
-    onclick: async (store, target, e) => {
+    onclick: async (store, target, e=false) => {
         const elmStore = document.getElementById('store')
         if (!store.extended) {
             elmStore.classList.add('loading')
@@ -31,7 +31,7 @@ const storeListItemConfig = {
         setView('map')
         map.goto(store.location, 20)
         Menu.setTab(elmStore)
-        e.stopPropagation()
+        if (e) e.stopPropagation()
     },
     onlocate: (store, target, e) => {
         e.stopPropagation()
@@ -76,7 +76,7 @@ const initStore = async () => {
     stores = new StoreList()
     await stores.fetchData('api/stores')
     stores.forEach((store) => {
-        store.marker = Map.createMarker(store)
+        store.marker = Map.createMarker(store, storeListItemConfig.onclick.bind())
         map.insertMarker(store.marker)
         elmStoreList.appendChild(Menu.createStoreListItem(store, storeListItemConfig))
     })

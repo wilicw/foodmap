@@ -45,6 +45,7 @@ class Menu {
         locateButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="cil-location-pin" data-inline="false"></iconify-icon>`)
         locateButton.addEventListener('click', function (e) {
             config.onlocate(store, this, e)
+            config.onclick(store, this, e)
         })
         bookmarkButton.className = 'store_li_bookmark'
         bookmarkButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="mdi:bookmark-outline" data-inline="false"></iconify-icon>`)
