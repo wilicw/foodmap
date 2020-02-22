@@ -84,6 +84,10 @@ const initStore = async () => {
         elmStore.classList.add('expand')
         e.stopPropagation()
     })
+    elmStore.addEventListener('scroll', (e) => {
+        elmStore.classList.add('expand')
+        e.stopPropagation()
+    })
     window.addEventListener('click', (e) => {
         elmStore.classList.remove('expand')
         elmStore.classList.remove('active')
