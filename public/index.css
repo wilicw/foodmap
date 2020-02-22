@@ -443,6 +443,7 @@ main {
 
     #store.active {
         height: 220px;
+        overflow: hidden;
         top: calc(100% - 275px);
     }
 
