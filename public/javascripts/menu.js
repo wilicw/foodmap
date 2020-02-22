@@ -32,7 +32,7 @@ class Menu {
         elmStoreListItem.insertAdjacentHTML('afterbegin', `<div class="store_list_item">
                     <div class="store_li_title">
                         <p class="store_li_name">${store.name}</p>
-                        <span class="about">${store.avgScore}分 / ${store.plString}</span>
+                        <span class="about">${store.avgScore}分 · ${store.plString}</span>
                     </div>
                     <div class="store_li_control"></div>
                 </div>`)
@@ -42,7 +42,7 @@ class Menu {
         let locateButton = document.createElement('button'),
             bookmarkButton = document.createElement('button')
         locateButton.className = 'store_li_locate'
-        locateButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="ic-round-location-on" data-inline="false"></iconify-icon>`)
+        locateButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="cil-location-pin" data-inline="false"></iconify-icon>`)
         locateButton.addEventListener('click', function (e) {
             config.onlocate(store, this, e)
         })
