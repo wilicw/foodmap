@@ -1,246 +1,178 @@
 import { Map } from "./map.js";
-import { Store, Filter } from "./store.js";
+import { StoreList, Filter } from "./store.js";
 import { Menu } from "./menu.js";
 
-const $ = (q) => document.querySelector(q),
-     $$ = (q) => document.querySelectorAll(q)
+let map, stores
 
-let map, stores, tags, categories;
+const initPrototype = () => {
+    Element.prototype.classIf = function (name, cond) {
+        if (arguments.length === 1) cond = !this.classList.contains(name)
+        this.classList[cond ? 'add' : 'remove'](name)
+    }
+}
 
 const initMap = () => {
-    map = new Map($('#map .leaflet-map'))
+    map = new Map('map')
+    map.map.setView([25.03210, 121.54257], Map.getZoom())
+    map.source = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
 }
 
-const initStore = async () => {
-    const menu = $('main')
-    stores = await Store.fetchList()
-    const onMarkerClick = (e) => {
-        e.originalEvent.stopPropagation()
-        centerMarker([e.target.getLatLng().lat, e.target.getLatLng().lng])
-        menu.classList.remove('search')
-        let id = e.target.options._id
-        storeInfo(id)
+const storeListItemConfig = {
+    onclick: async (store, target, e) => {
+        const elmStore = document.getElementById('store')
+        if (!store.extended) {
+            elmStore.classList.add('loading')
+            let full = await StoreList.fetchStoreData(store)
+            elmStore.classList.remove('loading')
+            store = {extended: true, ...store, ...full}
+            stores[store._id] = store
+        }
+        Menu.setStore(store)
+        setView('map')
+        map.goto(store.location, 20)
+        Menu.setTab(elmStore)
+        e.stopPropagation()
+    },
+    onlocate: (store, target, e) => {
+        e.stopPropagation()
+        setView('map')
+        map.goto(store.location, 20)
+    },
+    onbookmark: (store, target, e) => {
+        e.stopPropagation()
+        target.classIf('active')
     }
-    Store.forEach(stores, (store) => {
-        stores[store._id].score = Store.getAverageScore(store.scores)
-        stores[store._id].priceLevelDescription = Store.describePriceLevel(store.price_level)
-        stores[store._id].marker = Map.generateMarker(store, onMarkerClick)
-        map.addMarker(store.marker)
-    })
-}
-
-
-const centerMarker = (location) => {
-    let point = new L.LatLng(location[0], location[1])
-    map.map.setView(point, 20)
-}
-
-const storeInfo = async (id) => {
-    let store = stores[id]
-    centerMarker(store.location)
-    $('main').classList.add('store')
-    if (!store.extended) {
-        $('#store').classList.add('loading')
-        let full = await Store.fetchStoreDetails(store._id)
-        $('#store').classList.remove('loading')
-        stores[id] = {extended: true, ...store, ...full}
-        store = stores[id]
-    }
-    $('#store_name').innerText = store.name
-    $('#store_about').innerText = `${store.score}分 · ${store.priceLevelDescription}價位`
-    $('#store_menu').innerHTML = ''
-    $('#store').classList.remove('active')
-    let hasMenu = store.menu && store.menu.length
-    $('#store').classList[ hasMenu ? 'remove' : 'add']('empty')
-    $('#toggle_store_menu').innerText = hasMenu ? '菜單' : '暫無菜單'
-    if (hasMenu) $('#store_menu').appendChild(Menu.processStoreMenuData(store))
 }
 
 const Search = () => {
-    const storeList = $('#store_list')
-    Store.forEach(stores, (store) => map.map.removeLayer(store.marker))
-    while (storeList.firstChild) storeList.removeChild(storeList.firstChild)
-    Store.forEach(Filter.applyFilter(stores), (store) => {
-        storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem) => {
-            $('main').classList.remove('search')
-            storeInfo(storeListItem.id)
-        }))
-        store.marker.addTo(map.map)
+    const elmStoreList = document.getElementById('store_list')
+    stores.forEach((store) => map.map.removeLayer(store.marker))
+    while (elmStoreList.firstChild) elmStoreList.removeChild(elmStoreList.firstChild)
+    Filter.applyFilter(stores).forEach((store) => {
+        map.insertMarker(store.marker)
+        elmStoreList.appendChild(Menu.createStoreListItem(store, storeListItemConfig))
     })
 }
 
-const initTagList = async () => {
-    const tagList = $('#filter_tag')
-    tags = await Store.fetchTagList()
-    for (let tag of tags) {
-        tagList.appendChild(Menu.generateTagItem(tag))
+const setView = (name) => {
+    const elmBottomNav = document.getElementById('bottom_nav')
+    const elmBottomNavButton = elmBottomNav.querySelector(`[data-target=${name}]`)
+    let prev = elmBottomNav.getElementsByClassName('active')
+    if (prev) prev[0].classList.remove('active')
+    if (name === 'explore') {
+        Menu.setTab(document.getElementById('store_list'))
     }
+    if (name !== 'explore') {
+        document.getElementById('toggle_filter').classList.remove('active')
+    }
+    elmBottomNavButton.classList.add('active')
+    document.getElementsByTagName('main')[0].dataset.view = name
 }
 
-const initCategoriesList = async () => {
-    const CategoriesList = $('#filter_categories')
-    categories = await Store.fetchCategoriesList()
-    for (let category of categories) {
-        CategoriesList.appendChild(Menu.generateCategoriesItem(category))
-    }
-}
-
-const initStoreList = () => {
-    const storeList = $('#store_list'),
-          menu = $('main')
-    Store.forEach(stores, (store) => {
-        storeList.appendChild(Menu.generateStoreListItem(store, (storeListItem, e) => {
-            e.stopPropagation()
-            menu.classList.remove('search')
-            storeInfo(storeListItem.id)
-        }))
+const initStore = async () => {
+    const elmStoreList = document.getElementById('store_list'),
+          elmStore = document.getElementById('store'),
+        elmStoreClose = document.getElementsByClassName('store_close')[0]
+    stores = new StoreList()
+    await stores.fetchData('api/stores')
+    stores.forEach((store) => {
+        store.marker = Map.createMarker(store)
+        map.insertMarker(store.marker)
+        elmStoreList.appendChild(Menu.createStoreListItem(store, storeListItemConfig))
+    })
+    elmStore.addEventListener('click', (e) => {
+        elmStore.classList.add('expand')
+        e.stopPropagation()
+    })
+    window.addEventListener('click', (e) => {
+        elmStore.classList.remove('expand')
+        elmStore.classList.remove('active')
+        document.getElementById('map').classList.remove('shrink')
+    })
+    elmStoreClose.addEventListener('click', (e) => {
+        elmStore.classList.remove('expand')
+        elmStore.classList.remove('active')
+        Menu.setTab(elmStoreList)
+        document.getElementById('map').classList.remove('shrink')
     })
 }
 
-const initTextInput = () => {
-    const restaurantName = $('#restaurant_name'),
-        clearRestaurantName = $('#clear_restaurant_name'),
-        menu = $('main')
-    restaurantName.addEventListener('input', (e) => {
-        if (restaurantName.value) {
-            clearRestaurantName.classList.add('active')
-        } else {
-            clearRestaurantName.classList.remove('active')
-        }
+const initStoreNameInput = () => {
+    const elmStoreName = document.getElementById('store_name'),
+          elmClearStoreName = document.getElementsByClassName('store_name_clear')[0]
+    elmStoreName.addEventListener('input', (e) => {
+        elmClearStoreName.classIf('active', elmStoreName.value)
         Search()
     })
-    clearRestaurantName.addEventListener('click', (e) => {
-        menu.classList.remove('search')
-        restaurantName.value = ''
-        restaurantName.dispatchEvent(new Event('input'))
-    })
 }
 
-const initToggleFilter = () => {
-    const filter = $('#filter')
-    const toggleFilter = $('#toggle_filter')
-    toggleFilter.addEventListener('click', (e) => {
-        let prevStat = toggleFilter.classList.contains('active')
-        toggleFilter.innerText = `${prevStat ? '展開' : '收起'}篩選條件`
-        filter.classList[prevStat ? 'remove' : 'add']('active')
-        toggleFilter.classList[prevStat ? 'remove' : 'add']('active')
-    })
-}
-
-const initSelectable = () => {
-    $$('label.selectable').forEach((element) => {
-        element.addEventListener('click', (e) => {
-            let action = element.classList.contains('active') ? 'remove' : 'add'
-            element.classList[action]('active')
-            Search()
+const initStoreRate = () => {
+    let elmScoreButtonList = document.getElementsByClassName('store_rate')[0].children
+    Array.from(elmScoreButtonList).forEach((elmScoreButton) => {
+        elmScoreButton.addEventListener('click', (e) => {
+            let targetIndex = Array.prototype.indexOf.call(elmScoreButtonList, elmScoreButton)
+            Array.from(elmScoreButtonList).forEach((elmScoreButton) => {
+                let thisIndex = Array.prototype.indexOf.call(elmScoreButtonList, elmScoreButton)
+                elmScoreButton.classIf('active', thisIndex <= targetIndex)
+            })
         })
     })
 }
 
-const initToggleSearch = () => {
-    const toggleMenu = $('#toggle_search')
-    const menu = $('main')
-    toggleMenu.addEventListener('click', (e) => {
-        let prevStat =  menu.classList.contains('search')
-        menu.classList.remove('store')
-        menu.classList[prevStat ? 'remove' : 'add']('search')
+const initToggles = () => {
+    const elmToggleFilter = document.getElementById('toggle_filter'),
+          elmFilter = document.getElementById('filter'),
+          elmStoreList = document.getElementById('store_list')
+    elmToggleFilter.addEventListener('click', (e) => {
+        elmToggleFilter.classIf('active')
+        if (elmToggleFilter.classList.contains('active')) setView('explore')
+        Menu.setTab(elmToggleFilter.classList.contains('active') ? elmFilter : elmStoreList)
     })
 }
 
-const initPriceLevel = () => {
-    let priceLevelButtons = $$('.price_level_button')
-   priceLevelButtons.forEach((priceLevelButton) => {
-        priceLevelButton.addEventListener('click', function (e) {
-            priceLevelButtons.forEach((priceLevelButton) => {
-                priceLevelButton.classList.remove('active')
-            })
+const initBottomNav = () => {
+    const elmBottomNav = document.getElementById('bottom_nav')
+    Array.from(elmBottomNav.children).forEach((elmBottomNavButton) => {
+        elmBottomNavButton.addEventListener('click', (e) => {
+            setView(elmBottomNavButton.dataset.target)
+        })
+    })
+}
+
+const initControl = () => {
+    initToggles()
+    initStoreNameInput()
+    initStoreRate()
+    initBottomNav()
+}
+
+const initFilter = async () => {
+    const elmsPriceLevel = document.getElementsByName('price_level')
+    elmsPriceLevel.forEach((elmPriceLevel) => {
+        elmPriceLevel.addEventListener('click', function (e) {
+            const elmPrevActive = document.querySelector('[name=price_level].active')
+            if (elmPrevActive) elmPrevActive.classList.remove('active')
             this.classList.add('active')
             Search()
         })
     })
-}
-
-const initClearFilter = () => {
-    const clearFilterButton = $('#clear_filter')
-    clearFilterButton.addEventListener('click', (e) => {
-        $$('div .active').forEach((button) => {
-            button.classList.remove('active')
-            Search()
-        })
-    })
-}
-
-const initCloseStore = () => {
-    const closeStore = $('#close_store')
-    const main = $('main')
-    const store = $('#store')
-    closeStore.addEventListener('click', (e) => {
-        main.classList.remove('store')
-        store.classList.remove('active')
-    })
-}
-
-const initStoreMenu = () => {
-    const store = $('#store'),
-          main = $('main'),
-          toggle = $('#toggle_store_menu'),
-          menu = $('#store_menu')
-    store.addEventListener('click', (e) => {
-        e.stopPropagation()
-    })
-    window.addEventListener('click', (e) => {
-        if (Array.from(store.classList).includes('active')) {
-            store.classList.remove('active')
-        } else {
-            main.classList.remove('store')
-            store.classList.remove('active')
-        }        
-    })
-    toggle.addEventListener('click', (e) => {
-        if (menu.firstChild) {
-            store.classList.add('active')
-        }
-    })
-}
-
-const initMenuControl = () => {
-    initTextInput()
-    initToggleFilter()
-    initSelectable()
-    initToggleSearch()
-    initPriceLevel()
-    initClearFilter()
-    initCloseStore()
-    initStoreMenu()
-}
-
-const initMenu = async () => {
-    await initTagList()
-    await initCategoriesList()
-    initMenuControl()
-    initStoreList()
-}
-
-const registerServiceWorker = (e) => {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
+    const elmCategoryList = document.getElementsByClassName('filter_category')[0],
+            elmTypeList = document.getElementsByClassName('filter_type')[0]
+    const categories = await StoreList.fetchCategoriesList(),
+          types = await StoreList.fetchTypeList()
+    // TODO: func:onclick - move selected items to the first
+    const onclick = (e) => {
+        e.target.classIf('active')
+        Search()
     }
-}
-
-const checkInternet = () => {
-    if (!navigator.onLine) {
-        $('#offline').classList.add('active')
-    }
-    window.addEventListener('online', (e) => {
-        location.reload()
-    })
+    categories.forEach((category) => elmCategoryList.appendChild(Menu.createCategoryItem(category, onclick)))
+    types.forEach((type) => elmTypeList.appendChild(Menu.createTypeItem(type, onclick)))
 }
 
 window.onload = async () => {
-    registerServiceWorker()
-    checkInternet()
-    await initMap()
+    initPrototype()
+    initControl()
+    initMap()
     await initStore()
-    $('#map .load').style.display = 'none'
-    await initMenu()
+    await initFilter()
 }

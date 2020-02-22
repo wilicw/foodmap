@@ -1,24 +1,31 @@
 class Map {
 
     constructor (element) {
-        this.map = L.map(element);
-        this.map.setView([25.03210, 121.54257], Map.getZoom())
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-            attribution: `Made by <a href="https://dacsc.club">DACSC</a> Source code on <a href="https://github.com/wilicw/foodmap">Github</a>`,
+        this.map = L.map(element, { zoomControl: false });
+        L.control.zoom({ position:'bottomright' }).addTo(this.map);
+    }
+
+    set source (path) {
+        L.tileLayer(path, {
+            attribution: `Made by <a href="https://dacsc.club" target="_blank">DACSC</a> Source code on <a href="https://github.com/wilicw/foodmap" target="_blank">Github</a>`,
             maxZoom: 21
         }).addTo(this.map)
     }
 
-    addMarker (marker) {
+    goto (position, zoom) {
+        this.map.flyTo(position, zoom)
+    }
+
+    insertMarker (marker) {
         marker.addTo(this.map)
     }
 
-    static generateMarker (store, clickHandler) {
+    static createMarker (store, onclick) {
         let marker = L.marker(store.location, {
             _id: store._id,
             icon: Map.generateIcon('blue')
         })
-        marker.on('click', clickHandler)
+        marker.on('click', onclick)
         return marker
     }
 

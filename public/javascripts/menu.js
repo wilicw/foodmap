@@ -1,29 +1,76 @@
-
 class Menu {
 
-    static generateTagItem (tag) {
-        let tagItem = document.createElement('label')
-        tagItem.className = 'li_tag selectable'
-        tagItem.insertAdjacentText('beforeend', tag)
-        return tagItem
+    static setStore (store) {
+        let seatStatus = `本店家暫無座位資訊`;
+        document.getElementById('store')._id = store._id
+        document.getElementsByClassName('store_name')[0].innerText = store.name
+        document.getElementsByClassName('store_priceLevel')[0].innerText = store.plString
+        document.getElementsByClassName('store_avgScore')[0].innerText = store.avgScore
+        document.getElementsByClassName('store_numOfScore')[0].innerText = store.scores.length
+        document.getElementsByClassName('store_seat_status')[0].innerText = seatStatus
+        if (store.menu && store.menu.length) {
+            let elmStoreMenu  =document.getElementsByClassName('store_menu')[0]
+            document.getElementsByClassName('store_menu_wrapper')[0].classList.remove('no_menu')
+            while (elmStoreMenu.firstChild) elmStoreMenu.removeChild(elmStoreMenu.firstChild)
+            elmStoreMenu.appendChild(this.processStoreMenuData(store.menu))
+        } else {
+            document.getElementsByClassName('store_menu_wrapper')[0].classList.add('no_menu')
+        }
+
     }
 
-    static generateCategoriesItem (category) {
-        let categoriesItem = document.createElement('label')
-        categoriesItem.className = 'category_button selectable'
-        categoriesItem.insertAdjacentText('beforeend', category)
-        return categoriesItem
+    static setTab (element) {
+        document.getElementById('map').classIf('shrink', element === document.getElementById('store'))
+        const prevActiveElm = document.querySelector('.main_section_tab.active')
+        if (prevActiveElm === element) return
+        if (prevActiveElm) prevActiveElm.classList.remove('active')
+        element.classList.add('active')
     }
 
-    static generateStoreListItem (store, onclick) {
-        let storeListItem = document.createElement('div')
-        storeListItem.className = 'li_store'
-        storeListItem.id = store._id
-        storeListItem.insertAdjacentHTML('beforeend',
-            `<p class="li_store_name">${store.name}</p>` +
-            `<span class="li_about">${store.score}分 · ${store.priceLevelDescription}價位</span>`)
-        storeListItem.addEventListener('click', function (e) {onclick(this, e)})
-        return storeListItem
+    static createStoreListItem (store, config) {
+        let elmStoreListItem = document.createElement('div')
+        elmStoreListItem.insertAdjacentHTML('afterbegin', `<div class="store_list_item">
+                    <div class="store_li_title">
+                        <p class="store_li_name">${store.name}</p>
+                        <span class="about">${store.avgScore}分 / ${store.plString}</span>
+                    </div>
+                    <div class="store_li_control"></div>
+                </div>`)
+        elmStoreListItem.addEventListener('click', function (e) {
+            config.onclick(store, this, e)
+        })
+        let locateButton = document.createElement('button'),
+            bookmarkButton = document.createElement('button')
+        locateButton.className = 'store_li_locate'
+        locateButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="ic-round-location-on" data-inline="false"></iconify-icon>`)
+        locateButton.addEventListener('click', function (e) {
+            config.onlocate(store, this, e)
+        })
+        bookmarkButton.className = 'store_li_bookmark'
+        bookmarkButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="mdi:bookmark-outline" data-inline="false"></iconify-icon>`)
+        bookmarkButton.addEventListener('click', function (e) {
+            config.onbookmark(store, this, e)
+        })
+        let control = elmStoreListItem.getElementsByClassName('store_li_control')[0]
+        control.appendChild(locateButton)
+        control.appendChild(bookmarkButton)
+        return elmStoreListItem
+    }
+
+    static createTypeItem (type, onclick) {
+        let elmType = document.createElement('button')
+        elmType.name = 'type'
+        elmType.onclick = onclick
+        elmType.insertAdjacentText('afterbegin', type)
+        return elmType
+    }
+
+    static createCategoryItem (category, onclick) {
+        let elmCategory = document.createElement('button')
+        elmCategory.name = 'category'
+        elmCategory.onclick = onclick
+        elmCategory.insertAdjacentText('afterbegin', category)
+        return elmCategory
     }
 
     static getMenuCategories (menu) {
@@ -33,10 +80,10 @@ class Menu {
         return menuCategories
     }
 
-    static processStoreMenuData (store) {
-        let menu = store.menu
+    static processStoreMenuData (menu) {
         let menuCategories = this.getMenuCategories(menu)
         let menuHTML = document.createElement('div')
+        menuHTML.insertAdjacentHTML('afterbegin', `<p class="store_card_title">菜單</p>`)
         menuCategories.map(categorie => {
             const items = menu.filter(item => item.categories === categorie)
             let categoriesHTML = document.createElement('div')
