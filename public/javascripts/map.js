@@ -12,20 +12,16 @@ class Map {
         }).addTo(this.map)
     }
 
-    goto (position, zoom) {
-        this.map.flyTo(position, zoom)
-    }
-
-    insertMarker (marker) {
+    addMarker (marker) {
         marker.addTo(this.map)
     }
 
-    static createMarker (store, onclick) {
+    static generateMarker (store, clickHandler) {
         let marker = L.marker(store.location, {
             _id: store._id,
             icon: Map.generateIcon('blue')
         })
-        marker.on('click', onclick)
+        marker.on('click', clickHandler)
         return marker
     }
 
