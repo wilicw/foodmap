@@ -24,6 +24,7 @@ router.get('/stores', (req, res, next) => {
     let result = []
     docs.map(store => {
       delete store.menu
+      delete store.seats
       result.push(store)
     })
     res.send(JSON.stringify(result))
@@ -36,26 +37,21 @@ router.get('/store/:store', (req, res, next) => {
   const store = client.db(process.env.DB).collection("stores").findOne({
     _id: new ObjectId(store_id)
   }, (err, doc) => {
-    res.send(JSON.stringify(doc ? doc : {"status": 404, "msg": "No found."}))
-  })
-})
-
-/* GET seats by store id */
-router.get('/seats/:store', (req, res, next) => {
-  const store_id = sanitize(req.params.store)
-  const store = client.db(process.env.DB).collection("stores").findOne({
-    _id: new ObjectId(store_id)
-  }, (err, doc) => {
-    if (!doc.seats || !doc.seats.length) {
-      res.send(JSON.stringify({"status": 404, "msg": "No seats data found."}))
-      return
+    let result
+    if (doc) {
+      /* Process seats data */
+      let seats = doc.seats ? doc.seats : []
+      let recentSeatsData = seats.sort((a, b) => b.timestamp - a.timestamp)
+      if (recentSeatsData.length > 5) {
+        recentSeatsData = recentSeatsData.slice(0,5)
+      }
+      doc.seats = recentSeatsData
+      
+      result = doc
+    } else {
+      resilt = doc ? doc : {"status": 404, "msg": "No found."}
     }
-    let seats = doc.seats
-    let recentSeatsData = seats.sort((a, b) => a.timestamp > b.timestamp)
-    if (recentSeatsData.length > 5) {
-      recentSeatsData = recentSeatsData.slice(0,5)
-    }
-    res.send(JSON.stringify(recentSeatsData))
+    res.send(JSON.stringify(result))
   })
 })
 
@@ -105,10 +101,10 @@ router.get('/categories', (req, res, next) => {
 })
 
 /* POST uploads socre */
-router.post('/score', (req, res, next) => {
+router.post('/score/:store', (req, res, next) => {
   const data = req.body
   const now = new Date().getTime()
-  const store_id = sanitize(data.store)
+  const store_id = sanitize(req.params.store)
   const user = sanitize(data.user)
   const score = sanitize(data.score)
   let stores = client.db(process.env.DB).collection("stores")

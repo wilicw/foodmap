@@ -1,13 +1,18 @@
+import { StoreList } from "./store.js"
+
 class Menu {
 
     static setStore (store) {
-        let seatStatus = `本店家暫無座位資訊`;
+        let seatsStatus = `本店家暫無座位資訊`
+        if (store.seats.length) {
+            seatsStatus = StoreList.seatsLevel(store.seats[0].seats, store.seats[0].timestamp) 
+        }
         document.getElementById('store')._id = store._id
         document.getElementsByClassName('store_name')[0].innerText = store.name
         document.getElementsByClassName('store_priceLevel')[0].innerText = store.plString
         document.getElementsByClassName('store_avgScore')[0].innerText = store.avgScore
         document.getElementsByClassName('store_numOfScore')[0].innerText = store.scores.length
-        document.getElementsByClassName('store_seat_status')[0].innerText = seatStatus
+        document.getElementsByClassName('store_seat_status')[0].innerText = seatsStatus
         if (store.menu && store.menu.length) {
             let elmStoreMenu  =document.getElementsByClassName('store_menu')[0]
             document.getElementsByClassName('store_menu_wrapper')[0].classList.remove('no_menu')
@@ -181,6 +186,22 @@ class Menu {
             }
         }
         return itemHTML
+    }
+
+    static async sendSeatsStatus (seatsStatus) {
+        let StoreID = document.getElementById('store')._id
+        await fetch(`api/seats/${StoreID}`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    seats: seatsStatus
+                })
+            })
+        seatsStatus = StoreList.seatsLevel(seatsStatus, new Date().getTime())
+        document.getElementsByClassName('store_seat_status')[0].innerText = seatsStatus
+        return
     }
 
 }

@@ -275,6 +275,13 @@ main {
     border-radius: 0.2rem;
 }
 
+.store_mark_seat_button.active{
+    border: 1px solid var(--primary);
+    background: var(--primary-revs);
+    color: var(--primary);
+    border-radius: 0.2rem;
+}
+
 .store_rate {
     justify-content: center;
 }
