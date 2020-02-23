@@ -4,6 +4,12 @@ import { Menu } from "./menu.js";
 
 let map, stores
 
+const elmStoreList = document.getElementById('store_list'),
+      elmStore = document.getElementById('store'),
+      elmStoreClose = document.getElementsByClassName('store_close')[0],
+      elmToggleFilter = document.getElementById('toggle_filter'),
+      elmFilter = document.getElementById('filter')
+
 const initPrototype = () => {
     Element.prototype.classIf = function (name, cond) {
         if (arguments.length === 1) cond = !this.classList.contains(name)
@@ -19,7 +25,6 @@ const initMap = () => {
 
 const storeListItemConfig = {
     onclick: async (store, target, e=false) => {
-        const elmStore = document.getElementById('store')
         if (!store.extended) {
             elmStore.classList.add('loading')
             let full = await StoreList.fetchStoreData(store)
@@ -31,6 +36,8 @@ const storeListItemConfig = {
         setView('map')
         map.goto(store.location, 20)
         Menu.setTab(elmStore)
+        elmStore.classList.remove('expand')
+        elmStore.classList.add('active')
         if (e) e.stopPropagation()
     },
     onlocate: (store, target, e) => {
@@ -45,7 +52,6 @@ const storeListItemConfig = {
 }
 
 const Search = () => {
-    const elmStoreList = document.getElementById('store_list')
     stores.forEach((store) => map.map.removeLayer(store.marker))
     while (elmStoreList.firstChild) elmStoreList.removeChild(elmStoreList.firstChild)
     Filter.applyFilter(stores).forEach((store) => {
@@ -60,19 +66,22 @@ const setView = (name) => {
     let prev = elmBottomNav.getElementsByClassName('active')
     if (prev) prev[0].classList.remove('active')
     if (name === 'explore') {
-        Menu.setTab(document.getElementById('store_list'))
+        Menu.setTab(elmStoreList)
     }
     if (name !== 'explore') {
-        document.getElementById('toggle_filter').classList.remove('active')
+        elmToggleFilter.classList.remove('active')
     }
     elmBottomNavButton.classList.add('active')
     document.getElementsByTagName('main')[0].dataset.view = name
 }
 
 const initStore = async () => {
-    const elmStoreList = document.getElementById('store_list'),
-          elmStore = document.getElementById('store'),
-        elmStoreClose = document.getElementsByClassName('store_close')[0]
+    const resetStoreList = () => {
+        elmStore.classList.remove('expand')
+        elmStore.classList.remove('active')
+        Menu.setTab(elmStoreList)
+        document.getElementById('map').classList.remove('shrink')
+    }
     stores = new StoreList()
     await stores.fetchData('api/stores')
     stores.forEach((store) => {
@@ -84,20 +93,26 @@ const initStore = async () => {
         elmStore.classList.add('expand')
         e.stopPropagation()
     })
+
+    let touchMoveStart
+    elmStore.addEventListener('touchstart', (e) => {
+        touchMoveStart = e.touches[0].clientY
+    })
+     
     elmStore.addEventListener('touchend', (e) => {
-        elmStore.classList.add('expand')
+        let touchMoveEnd = e.changedTouches[0].clientY
+        if (elmStore.scrollTop < 5) {
+            if (touchMoveStart < touchMoveEnd - 5) {
+                elmStore.classList.remove('expand')
+            }
+        }
+        if(touchMoveStart > touchMoveEnd + 5) {
+            elmStore.classList.add('expand')
+        }
         e.stopPropagation()
     })
-    window.addEventListener('click', (e) => {
-        elmStore.classList.remove('expand')
-        elmStore.classList.remove('active')
-        document.getElementById('map').classList.remove('shrink')
-    })
     elmStoreClose.addEventListener('click', (e) => {
-        elmStore.classList.remove('expand')
-        elmStore.classList.remove('active')
-        Menu.setTab(elmStoreList)
-        document.getElementById('map').classList.remove('shrink')
+        resetStoreList()
     })
 }
 
@@ -124,9 +139,6 @@ const initStoreRate = () => {
 }
 
 const initToggles = () => {
-    const elmToggleFilter = document.getElementById('toggle_filter'),
-          elmFilter = document.getElementById('filter'),
-          elmStoreList = document.getElementById('store_list')
     elmToggleFilter.addEventListener('click', (e) => {
         elmToggleFilter.classIf('active')
         if (elmToggleFilter.classList.contains('active')) setView('explore')
