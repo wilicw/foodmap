@@ -34,6 +34,8 @@ const storeListItemConfig = {
         }
         Menu.setStore(store)
         setView('map')
+        initSeats()
+        initStoreRate()
         map.goto(store.location, 20)
         Menu.setTab(elmStore)
         elmStore.classList.remove('expand')
@@ -128,12 +130,28 @@ const initStoreNameInput = () => {
 const initStoreRate = () => {
     let elmScoreButtonList = document.getElementsByClassName('store_rate')[0].children
     Array.from(elmScoreButtonList).forEach((elmScoreButton) => {
+        elmScoreButton.classList.remove('active')
         elmScoreButton.addEventListener('click', (e) => {
             let targetIndex = Array.prototype.indexOf.call(elmScoreButtonList, elmScoreButton)
             Array.from(elmScoreButtonList).forEach((elmScoreButton) => {
                 let thisIndex = Array.prototype.indexOf.call(elmScoreButtonList, elmScoreButton)
                 elmScoreButton.classIf('active', thisIndex <= targetIndex)
             })
+        })
+    })
+}
+
+const initSeats = () => {
+    let elmSeatsButtonList = document.getElementsByClassName('store_mark_seat')[0].children
+    Array.from(elmSeatsButtonList).forEach((elmSeatsButton) => {
+            elmSeatsButton.classList.remove('active')
+            elmSeatsButton.addEventListener('click', (e) => {
+            Array.from(elmSeatsButtonList).forEach((elmSeatsButton) => {
+                elmSeatsButton.classList.remove('active')
+            })
+            let seatsStatus = Array.prototype.indexOf.call(elmSeatsButtonList, elmSeatsButton)
+            Menu.sendSeatsStatus(seatsStatus)
+            e.srcElement.classList.add('active')
         })
     })
 }
@@ -159,6 +177,7 @@ const initControl = () => {
     initToggles()
     initStoreNameInput()
     initStoreRate()
+    initSeats()
     initBottomNav()
 }
 
