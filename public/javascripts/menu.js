@@ -4,8 +4,8 @@ class Menu {
 
     static setStore (store) {
         let seatsStatus = `本店家暫無座位資訊`
-        if (store.seats.length) {
-            seatsStatus = StoreList.seatsLevel(store.seats[0].seats, store.seats[0].timestamp) 
+        if (store.seats !== -1) {
+            seatsStatus = StoreList.seatsLevel(store.seats.seats, store.seats.timestamp) 
         }
         document.getElementById('store')._id = store._id
         document.getElementsByClassName('store_name')[0].innerText = store.name
