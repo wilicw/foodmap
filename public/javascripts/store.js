@@ -98,23 +98,23 @@ class Filter {
             elmsType = document.getElementsByName('type')
         return {
             restaurantName: document.getElementById('store_name').value,
-            maxPriceLevel: !(() => {
+            maxPriceLevel: (() => {
                 return elmPriceLevel ? elmPriceLevel.innerText.length : 3
-            }),
-            selectedCategories: !(() => {
+            })(),
+            selectedCategories: (() => {
                 let categories = []
                 elmsCategory.forEach((elmCategory) => {
                     if (elmCategory.classList.contains('active')) categories.push(elmCategory.innerText)
                 })
                 return categories
-            }),
-            selectedType: !(() => {
+            })(),
+            selectedType: (() => {
                 let types = []
                 elmsType.forEach((elmType) => {
                     if (elmType.classList.contains('active')) types.push(elmType.innerText)
                 })
                 return types
-            })
+            })()
         }
     }
 
