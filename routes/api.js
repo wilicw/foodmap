@@ -34,6 +34,7 @@ router.get('/stores', (req, res, next) => {
       res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
       return
     }
+    console.log(reply)
     if (reply) {
       res.send(reply)
     } else {
@@ -61,6 +62,7 @@ router.get('/store/:store', (req, res, next) => {
       res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
       return
     }
+    console.log(reply)
     if (reply) {
       res.send(reply)
     } else {
@@ -97,6 +99,7 @@ router.get('/types', (req, res, next) => {
       res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
       return
     }
+    console.log(reply)
     if (reply) {
       res.send(reply)
     } else {
@@ -152,6 +155,7 @@ router.post('/score/:store', (req, res, next) => {
       res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
       return
     }
+    console.log(reply)
     if (reply) {
       /* write into redis */
       let tmpObjectFormRedisReply = JSON.parse(reply)
@@ -205,6 +209,7 @@ router.post('/seats/:store', (req, res, next) => {
       res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
       return
     }
+    console.log(reply)
     if (reply) {
       /* write into redis */
       let tmpObjectFormRedisReply = JSON.parse(reply)
@@ -241,6 +246,7 @@ router.post('/store/:store', (req, res, next) => {
       res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
       return
     }
+    console.log(reply)
     if (reply) {
       /* write into redis */
       let tmpObjectFormRedisReply = JSON.parse(reply)
