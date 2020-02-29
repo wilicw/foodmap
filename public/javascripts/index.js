@@ -1,6 +1,7 @@
 import { Map } from "./map.js";
 import { StoreList, Filter } from "./store.js";
 import { Menu } from "./menu.js";
+import { User } from "./user.js";
 
 let map, stores
 
@@ -113,6 +114,9 @@ const initStore = async () => {
         }
         e.stopPropagation()
     })
+    document.getElementById('bottom_nav').addEventListener('click', (e) => {
+        resetStoreList()
+    })
     elmStoreClose.addEventListener('click', (e) => {
         resetStoreList()
     })
@@ -173,12 +177,46 @@ const initBottomNav = () => {
     })
 }
 
+const initFirebaseApi = () => {
+    const firebaseConfig = {
+        apiKey: "AIzaSyDGJZSiVy05E1ypRBqIXbF1qsoopqa1JY0",
+        authDomain: "daanfoodmap.firebaseapp.com",
+        databaseURL: "https://daanfoodmap.firebaseio.com",
+        projectId: "daanfoodmap",
+        storageBucket: "daanfoodmap.appspot.com",
+        messagingSenderId: "104547902017",
+        appId: "1:104547902017:web:d4ce838822441d54301cc0",
+        measurementId: "G-48GH08JQHS"
+    }
+    firebase.initializeApp(firebaseConfig)
+    firebase.analytics()
+}
+
+const initUser = () => {
+    let user  = new User()
+    if (localStorage.jwt) {
+        User.showPage('personal')
+        User.renderUserData()
+    }
+    document.getElementById('login_button').addEventListener('click', (e) => {
+        User.loginWithGoogle()
+    })
+    document.getElementById('logout').addEventListener('click', (e) => {
+        User.logout()
+    })
+    document.getElementById('save_data').addEventListener('click', (e) => {
+        User.savePersonalData()
+    })
+}
+
 const initControl = () => {
     initToggles()
     initStoreNameInput()
     initStoreRate()
     initSeats()
     initBottomNav()
+    initFirebaseApi()
+    initUser()
 }
 
 const initFilter = async () => {

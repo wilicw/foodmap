@@ -354,6 +354,9 @@ main {
         display: none;
     }
 
+    #user {
+        display: none;
+    }
 }
 
 @media (max-width: 420px) {
@@ -557,4 +560,63 @@ main {
 
 .lighter {
     color: #888888;
+}
+
+.input {
+    height: 30px;
+    width: 95%;
+    padding: 10px;
+    background: var(--primary);
+    border-radius: 0.15rem;
+    box-shadow: var(--shadow-small);
+    border: 0;
+    outline: 0;
+    font-size: 1em;
+    background-color: transparent;
+}
+
+.login_title {
+    text-align: center;
+    font-size: 1.5em;
+}
+
+#personal:not(.active),
+#login:not(.active) {
+    display: none;
+}
+
+#personal,
+#login {
+    align-items: center;
+    padding: 1em;
+    margin: 1em;
+    margin-top: 2em;
+    text-align: center;
+}
+
+.submit {
+    display: inline-block;
+    border-radius: 0.15rem;
+    box-shadow: var(--shadow-small);
+    border: 0;
+    outline: 0;
+    background: var(--secondary);
+    color: var(--secondary-revs);
+    margin-top: 2em;
+    height: 40px;
+    cursor: pointer;
+    width: 30%;
+}
+
+#personal label p {
+    text-align: left;
+}
+
+#logout {
+    cursor: pointer;
+}
+
+#user {
+    min-height: max-content;
+    overflow: scroll;
 }
