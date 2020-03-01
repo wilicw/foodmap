@@ -1,13 +1,18 @@
+import { StoreList } from "./store.js"
+
 class Menu {
 
     static setStore (store) {
-        let seatStatus = `本店家暫無座位資訊`;
+        let seatsStatus = `本店家暫無座位資訊`
+        if (store.seats !== -1) {
+            seatsStatus = StoreList.seatsLevel(store.seats.seats, store.seats.timestamp) 
+        }
         document.getElementById('store')._id = store._id
         document.getElementsByClassName('store_name')[0].innerText = store.name
         document.getElementsByClassName('store_priceLevel')[0].innerText = store.plString
         document.getElementsByClassName('store_avgScore')[0].innerText = store.avgScore
         document.getElementsByClassName('store_numOfScore')[0].innerText = store.scores.length
-        document.getElementsByClassName('store_seat_status')[0].innerText = seatStatus
+        document.getElementsByClassName('store_seat_status')[0].innerText = seatsStatus
         if (store.menu && store.menu.length) {
             let elmStoreMenu  =document.getElementsByClassName('store_menu')[0]
             document.getElementsByClassName('store_menu_wrapper')[0].classList.remove('no_menu')
@@ -32,7 +37,7 @@ class Menu {
         elmStoreListItem.insertAdjacentHTML('afterbegin', `<div class="store_list_item">
                     <div class="store_li_title">
                         <p class="store_li_name">${store.name}</p>
-                        <span class="about">${store.avgScore}分 / ${store.plString}</span>
+                        <span class="about">${store.avgScore}分 · ${store.plString}</span>
                     </div>
                     <div class="store_li_control"></div>
                 </div>`)
@@ -42,9 +47,10 @@ class Menu {
         let locateButton = document.createElement('button'),
             bookmarkButton = document.createElement('button')
         locateButton.className = 'store_li_locate'
-        locateButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="ic-round-location-on" data-inline="false"></iconify-icon>`)
+        locateButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="cil-location-pin" data-inline="false"></iconify-icon>`)
         locateButton.addEventListener('click', function (e) {
             config.onlocate(store, this, e)
+            config.onclick(store, this, e)
         })
         bookmarkButton.className = 'store_li_bookmark'
         bookmarkButton.insertAdjacentHTML('afterbegin', `<iconify-icon data-icon="mdi:bookmark-outline" data-inline="false"></iconify-icon>`)
@@ -180,6 +186,22 @@ class Menu {
             }
         }
         return itemHTML
+    }
+
+    static async sendSeatsStatus (seatsStatus) {
+        let StoreID = document.getElementById('store')._id
+        await fetch(`api/seats/${StoreID}`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    seats: seatsStatus
+                })
+            })
+        seatsStatus = StoreList.seatsLevel(seatsStatus, new Date().getTime())
+        document.getElementsByClassName('store_seat_status')[0].innerText = seatsStatus
+        return
     }
 
 }

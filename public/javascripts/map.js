@@ -25,7 +25,9 @@ class Map {
             _id: store._id,
             icon: Map.generateIcon('blue')
         })
-        marker.on('click', onclick)
+        marker.on('click', () => {
+            onclick(store)
+        })
         return marker
     }
 

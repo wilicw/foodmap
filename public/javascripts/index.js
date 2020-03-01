@@ -1,8 +1,15 @@
 import { Map } from "./map.js";
 import { StoreList, Filter } from "./store.js";
 import { Menu } from "./menu.js";
+import { User } from "./user.js";
 
 let map, stores
+
+const elmStoreList = document.getElementById('store_list'),
+      elmStore = document.getElementById('store'),
+      elmStoreClose = document.getElementsByClassName('store_close')[0],
+      elmToggleFilter = document.getElementById('toggle_filter'),
+      elmFilter = document.getElementById('filter')
 
 const initPrototype = () => {
     Element.prototype.classIf = function (name, cond) {
@@ -18,8 +25,7 @@ const initMap = () => {
 }
 
 const storeListItemConfig = {
-    onclick: async (store, target, e) => {
-        const elmStore = document.getElementById('store')
+    onclick: async (store, target, e=false) => {
         if (!store.extended) {
             elmStore.classList.add('loading')
             let full = await StoreList.fetchStoreData(store)
@@ -29,9 +35,13 @@ const storeListItemConfig = {
         }
         Menu.setStore(store)
         setView('map')
+        initSeats()
+        initStoreRate()
         map.goto(store.location, 20)
         Menu.setTab(elmStore)
-        e.stopPropagation()
+        elmStore.classList.remove('expand')
+        elmStore.classList.add('active')
+        if (e) e.stopPropagation()
     },
     onlocate: (store, target, e) => {
         e.stopPropagation()
@@ -45,7 +55,6 @@ const storeListItemConfig = {
 }
 
 const Search = () => {
-    const elmStoreList = document.getElementById('store_list')
     stores.forEach((store) => map.map.removeLayer(store.marker))
     while (elmStoreList.firstChild) elmStoreList.removeChild(elmStoreList.firstChild)
     Filter.applyFilter(stores).forEach((store) => {
@@ -60,23 +69,26 @@ const setView = (name) => {
     let prev = elmBottomNav.getElementsByClassName('active')
     if (prev) prev[0].classList.remove('active')
     if (name === 'explore') {
-        Menu.setTab(document.getElementById('store_list'))
+        Menu.setTab(elmStoreList)
     }
     if (name !== 'explore') {
-        document.getElementById('toggle_filter').classList.remove('active')
+        elmToggleFilter.classList.remove('active')
     }
     elmBottomNavButton.classList.add('active')
     document.getElementsByTagName('main')[0].dataset.view = name
 }
 
 const initStore = async () => {
-    const elmStoreList = document.getElementById('store_list'),
-          elmStore = document.getElementById('store'),
-        elmStoreClose = document.getElementsByClassName('store_close')[0]
+    const resetStoreList = () => {
+        elmStore.classList.remove('expand')
+        elmStore.classList.remove('active')
+        Menu.setTab(elmStoreList)
+        document.getElementById('map').classList.remove('shrink')
+    }
     stores = new StoreList()
     await stores.fetchData('api/stores')
     stores.forEach((store) => {
-        store.marker = Map.createMarker(store)
+        store.marker = Map.createMarker(store, storeListItemConfig.onclick.bind())
         map.insertMarker(store.marker)
         elmStoreList.appendChild(Menu.createStoreListItem(store, storeListItemConfig))
     })
@@ -84,16 +96,29 @@ const initStore = async () => {
         elmStore.classList.add('expand')
         e.stopPropagation()
     })
-    window.addEventListener('click', (e) => {
-        elmStore.classList.remove('expand')
-        elmStore.classList.remove('active')
-        document.getElementById('map').classList.remove('shrink')
+
+    let touchMoveStart
+    elmStore.addEventListener('touchstart', (e) => {
+        touchMoveStart = e.touches[0].clientY
+    })
+     
+    elmStore.addEventListener('touchend', (e) => {
+        let touchMoveEnd = e.changedTouches[0].clientY
+        if (elmStore.scrollTop < 5) {
+            if (touchMoveStart < touchMoveEnd - 5) {
+                elmStore.classList.remove('expand')
+            }
+        }
+        if(touchMoveStart > touchMoveEnd + 5) {
+            elmStore.classList.add('expand')
+        }
+        e.stopPropagation()
+    })
+    document.getElementById('bottom_nav').addEventListener('click', (e) => {
+        resetStoreList()
     })
     elmStoreClose.addEventListener('click', (e) => {
-        elmStore.classList.remove('expand')
-        elmStore.classList.remove('active')
-        Menu.setTab(elmStoreList)
-        document.getElementById('map').classList.remove('shrink')
+        resetStoreList()
     })
 }
 
@@ -109,6 +134,7 @@ const initStoreNameInput = () => {
 const initStoreRate = () => {
     let elmScoreButtonList = document.getElementsByClassName('store_rate')[0].children
     Array.from(elmScoreButtonList).forEach((elmScoreButton) => {
+        elmScoreButton.classList.remove('active')
         elmScoreButton.addEventListener('click', (e) => {
             let targetIndex = Array.prototype.indexOf.call(elmScoreButtonList, elmScoreButton)
             Array.from(elmScoreButtonList).forEach((elmScoreButton) => {
@@ -119,10 +145,22 @@ const initStoreRate = () => {
     })
 }
 
+const initSeats = () => {
+    let elmSeatsButtonList = document.getElementsByClassName('store_mark_seat')[0].children
+    Array.from(elmSeatsButtonList).forEach((elmSeatsButton) => {
+            elmSeatsButton.classList.remove('active')
+            elmSeatsButton.addEventListener('click', (e) => {
+            Array.from(elmSeatsButtonList).forEach((elmSeatsButton) => {
+                elmSeatsButton.classList.remove('active')
+            })
+            let seatsStatus = Array.prototype.indexOf.call(elmSeatsButtonList, elmSeatsButton)
+            Menu.sendSeatsStatus(seatsStatus)
+            e.srcElement.classList.add('active')
+        })
+    })
+}
+
 const initToggles = () => {
-    const elmToggleFilter = document.getElementById('toggle_filter'),
-          elmFilter = document.getElementById('filter'),
-          elmStoreList = document.getElementById('store_list')
     elmToggleFilter.addEventListener('click', (e) => {
         elmToggleFilter.classIf('active')
         if (elmToggleFilter.classList.contains('active')) setView('explore')
@@ -139,11 +177,46 @@ const initBottomNav = () => {
     })
 }
 
+const initFirebaseApi = () => {
+    const firebaseConfig = {
+        apiKey: "AIzaSyDGJZSiVy05E1ypRBqIXbF1qsoopqa1JY0",
+        authDomain: "daanfoodmap.firebaseapp.com",
+        databaseURL: "https://daanfoodmap.firebaseio.com",
+        projectId: "daanfoodmap",
+        storageBucket: "daanfoodmap.appspot.com",
+        messagingSenderId: "104547902017",
+        appId: "1:104547902017:web:d4ce838822441d54301cc0",
+        measurementId: "G-48GH08JQHS"
+    }
+    firebase.initializeApp(firebaseConfig)
+    firebase.analytics()
+}
+
+const initUser = () => {
+    let user  = new User()
+    if (localStorage.jwt) {
+        User.showPage('personal')
+        User.renderUserData()
+    }
+    document.getElementById('login_button').addEventListener('click', (e) => {
+        User.loginWithGoogle()
+    })
+    document.getElementById('logout').addEventListener('click', (e) => {
+        User.logout()
+    })
+    document.getElementById('save_data').addEventListener('click', (e) => {
+        User.savePersonalData()
+    })
+}
+
 const initControl = () => {
     initToggles()
     initStoreNameInput()
     initStoreRate()
+    initSeats()
     initBottomNav()
+    initFirebaseApi()
+    initUser()
 }
 
 const initFilter = async () => {

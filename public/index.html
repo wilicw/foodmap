@@ -11,6 +11,10 @@
     <script async src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
     <script async defer src="https://code.iconify.design/1/1.0.4/iconify.min.js"></script>
     <link rel="stylesheet" href="index.css">
+    <script defer src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.9.1/firebase-analytics.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.9.1/firebase-auth.js"></script>
+    
     <script async defer src="javascripts/index.js" type="module"></script>
 </head>
 <body>
@@ -22,8 +26,8 @@
             </div>
             <div id="search" class="filter_section main_section">
                 <label class="store_name_wrapper" for="store_name">
-                    <button class="store_name_clear">
-                        <span class="iconify" data-icon="mdi:close" data-inline="false"></span>
+                    <button class="store_name_search">
+                        <span class="iconify" data-icon="ic-round-search" data-inline="false"></span>
                     </button>
                     <input id="store_name" type="text" placeholder="搜尋食物">
                 </label>
@@ -55,9 +59,9 @@
                 <p class="store_info store_priceLevel"></p>
                 <p class="store_info">
                     <span class="store_avgScore"></span>分 ·
-                    <span class="store_numOfScore"></span>個評分
+                    <span class="store_numOfScore"></span> 個評分
                 </p>
-                <p class="store_info store_seat_status">本店家暫無座位資訊</p>
+                <p class="store_info store_seat_status" id="store_seats">本店家暫無座位資訊</p>
                 <div class="store_card">
                     <p class="store_card_title">標記當前狀態</p>
                     <div class="store_mark_seat">
@@ -87,11 +91,43 @@
                 </div>
             </div>
             <div class="main_section menu_footer">
-                <p class="claim">本網頁資訊僅供參考</p>
+                <p class="claim lighter">網頁資訊僅供參考</p>
             </div>
         </div>
         <div id="map"></div>
-        <div id="user"></div>
+        <div id="user">
+            <div id="login" class="active">
+                <p class="login_title">登入</p>
+                <button id="login_button" class="submit lighter">以 Google 帳號登入</button>
+            </div>
+
+            <div id="personal" class="">
+                <p class="login_title">個人設定</p>
+                <label for="displayname">
+                    <p class="lighter">暱稱</p>
+                    <input class="input" type="text" placeholder="暱稱" id="displayname">
+                </label>
+                <label for="realname">
+                    <p class="lighter">姓名</p>
+                    <input class="input" type="text" placeholder="姓名" id="realname">
+                </label>
+                <label for="stuID">
+                    <p class="lighter">學號</p>
+                    <input class="input" type="text" placeholder="學號" id="stuID">
+                </label>
+                <label for="personalID">
+                    <p class="lighter">身份證字號</p>
+                    <input class="input" type="text" placeholder="身份證字號" id="personalID">
+                </label>
+                <label for="school">
+                    <p class="lighter">學校</p>
+                    <input class="input" type="text" placeholder="大安高工" id="school">
+                </label>
+                <p style="text-align: left;">是否通過驗證： 否</p>
+                <button class="submit lighter" id="save_data">儲存</button>
+                <p id="logout" class="lighter">登出</p>
+            </div>
+        </div>
     </main>
     <!-- mobile only -->
     <div id="bottom_nav">
