@@ -13,21 +13,26 @@ class User {
       personalID: document.getElementById('personalID').value,
       school: document.getElementById('school').value
     }
-    fetch(`api/user/${jwtToken}`, {
+    let apiResponse = await (await fetch(`api/user/${jwtToken}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
-    }).then(r => r.json()).then(r => {
-      if (r.status == 200) {
+    })).json()
+    switch (apiResponse.status) {
+      case 200:
         this.renderUserData()
-      } else if (r.status == 400) {
+        break
+      case 400:
         this.logout()
-      } else if (r.status == 500) {
-        alert(r.msg)
-      }
-    })
+        break
+      case 500:
+        alert(apiResponse.msg)
+        break
+      default:
+        break
+    }
   }
 
   static async fetchPersonalData () {
@@ -37,8 +42,6 @@ class User {
 
   static async renderUserData () {
     let response = await this.fetchPersonalData()
-    console.log(response.status);
-    
     if (response.status !== 200) {
       this.logout()
       return
@@ -51,26 +54,22 @@ class User {
     document.getElementById('school').value = data.school
   }
 
-  static loginWithGoogle () {
+  static async loginWithGoogle () {
     let provider = new firebase.auth.GoogleAuthProvider()
-    firebase.auth().signInWithPopup(provider).then(result => {
-      let token = result.credential.accessToken
-      let user = result.user
-      fetch(`api/user/${token}`,{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(r => r.json()).then(r => {
-        if (r.status == 200) {
-          localStorage.setItem('jwt', r.token)
-          this.showPage('personal')
-          this.renderUserData()
-        }
-      })
-    }).catch(error => {
-      console.log(error)
-    })    
+    let googleLoginResult = await firebase.auth().signInWithPopup(provider)    
+    let token = googleLoginResult.credential.accessToken
+    let user = googleLoginResult.user
+    let apiResponse = await (await fetch(`api/user/${token}`,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).json()
+    if (apiResponse.status == 200) {
+      localStorage.setItem('jwt', apiResponse.token)
+      this.showPage('personal')
+      this.renderUserData()
+    }
   }
 
   static logout () {
