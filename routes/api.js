@@ -6,6 +6,7 @@ const redisExpireTime = 86400
 
 const request = require('request')
 const jwt = require('jsonwebtoken')
+const jwtExp = 1000*60*60*24*180
 
 require('dotenv').config()
 
@@ -309,7 +310,8 @@ router.post('/user/:token', (req, res, next) => {
       }
       let token = jwt.sign({
         email: body.email,
-        googleAccessToken: accessToken
+        googleAccessToken: accessToken,
+        exp: (new Date()).getTime() + jwtExp
       }, process.env.JWT_SECRET)
       res.json({"status": 200, "msg": "Success", "token": token})
     })
