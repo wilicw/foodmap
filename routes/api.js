@@ -35,11 +35,12 @@ router.get('/stores', (req, res, next) => {
   redisClient.get("stores", (err, reply) => {
     if (err) {
       console.log(err)
-      res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
+      res.json({"status": 500, "msg": "Server error."})
       return
     }
     console.log(reply)
     if (reply) {
+      res.setHeader('Content-Type', 'application/json')
       res.send(reply)
     } else {
       const stores = DBclient.db(process.env.DB).collection("stores").find({})
@@ -50,7 +51,7 @@ router.get('/stores', (req, res, next) => {
           delete store.seats
           result.push(store)
         })
-        res.send(JSON.stringify(result))
+        res.json(result)
         redisClient.set("stores", JSON.stringify(result), 'EX', redisExpireTime)
       })
     }
@@ -63,11 +64,12 @@ router.get('/store/:store', (req, res, next) => {
   redisClient.get(store_id, (err, reply) => {
     if (err) {
       console.log(err)
-      res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
+      res.json({"status": 500, "msg": "Server error."})
       return
     }
     console.log(reply)
     if (reply) {
+      res.setHeader('Content-Type', 'application/json')
       res.send(reply)
     } else {
       DBclient.db(process.env.DB).collection("stores").findOne({
@@ -88,7 +90,7 @@ router.get('/store/:store', (req, res, next) => {
         } else {
           resilt = doc ? doc : {"status": 404, "msg": "No found."}
         }
-        res.send(JSON.stringify(result))
+        res.json(result)
         redisClient.set(store_id, JSON.stringify(doc), 'EX', redisExpireTime)
       })
     }
@@ -100,11 +102,12 @@ router.get('/types', (req, res, next) => {
   redisClient.get("types", (err, reply) => {
     if (err) {
       console.log(err)
-      res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
+      res.json({"status": 500, "msg": "Server error."})
       return
     }
     console.log(reply)
     if (reply) {
+      res.setHeader('Content-Type', 'application/json')
       res.send(reply)
     } else {
       const stores = DBclient.db(process.env.DB).collection("stores").find({})
@@ -114,7 +117,7 @@ router.get('/types', (req, res, next) => {
           types.push(docs[index].type)
         }
         types = [... new Set(types.flat())]
-        res.send(JSON.stringify(types))
+        res.json(types)
         redisClient.set("types", JSON.stringify(types), 'EX', redisExpireTime)
       })
     }
@@ -126,10 +129,11 @@ router.get('/categories', (req, res, next) => {
   redisClient.get("categories", (err, reply) => {
     if (err) {
       console.log(err)
-      res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
+      res.json({"status": 500, "msg": "Server error."})
       return
     }
     if (reply) {
+      res.setHeader('Content-Type', 'application/json')
       res.send(reply)
     } else {
       const stores = DBclient.db(process.env.DB).collection("stores").find({})
@@ -139,7 +143,7 @@ router.get('/categories', (req, res, next) => {
           categories.push(docs[index].categories)
         }
         categories = [... new Set(categories.flat())]
-        res.send(JSON.stringify(categories))
+        res.json(categories)
         redisClient.set("categories", JSON.stringify(categories), 'EX', redisExpireTime)
       })
     }
@@ -156,7 +160,7 @@ router.post('/score/:store', (req, res, next) => {
   redisClient.get(store_id, (err, reply) => {
     if (err) {
       console.log(err)
-      res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
+      res.json({"status": 500, "msg": "Server error."})
       return
     }
     console.log(reply)
@@ -198,7 +202,7 @@ router.post('/score/:store', (req, res, next) => {
       }
     }
   )
-  res.send(JSON.stringify({"status": 200, "msg": "Success"}))
+  res.json({"status": 200, "msg": "Success"})
 })
 
 /* POST uploads recent seats information */
@@ -210,7 +214,7 @@ router.post('/seats/:store', (req, res, next) => {
   redisClient.get(store_id, (err, reply) => {
     if (err) {
       console.log(err)
-      res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
+      res.json({"status": 500, "msg": "Server error."})
       return
     }
     console.log(reply)
@@ -236,7 +240,7 @@ router.post('/seats/:store', (req, res, next) => {
       }
     }
   )
-  res.send(JSON.stringify({"status": 200, "msg": "Success"}))
+  res.json({"status": 200, "msg": "Success"})
 })
 
 /* POST edit stroe information */
@@ -247,7 +251,7 @@ router.post('/store/:store', (req, res, next) => {
   redisClient.get(store_id, (err, reply) => {
     if (err) {
       console.log(err)
-      res.send(JSON.stringify({"status": 500, "msg": "Server error."}))
+      res.json({"status": 500, "msg": "Server error."})
       return
     }
     console.log(reply)
@@ -277,7 +281,7 @@ router.post('/store/:store', (req, res, next) => {
       }
     }
   )
-  res.send(JSON.stringify({"status": 200, "msg": "Success"}))
+  res.json({"status": 200, "msg": "Success"})
 })
 
 /* POST create a new user or login via google login */
@@ -285,7 +289,7 @@ router.post('/user/:token', (req, res, next) => {
   const accessToken = req.params.token
   request(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`, (error, response, body) => {
     if (response.statusCode != 200) {
-      res.send(JSON.stringify({"status": 400, "msg": "access token error."}))
+      res.json({"status": 400, "msg": "access token error."})
       return
     }
     body = JSON.parse(body)
@@ -307,7 +311,7 @@ router.post('/user/:token', (req, res, next) => {
         email: body.email,
         googleAccessToken: accessToken
       }, process.env.JWT_SECRET)
-      res.send(JSON.stringify({"status": 200, "msg": "Success", "token": token})) 
+      res.json({"status": 200, "msg": "Success", "token": token})
     })
   })
 })
@@ -318,14 +322,14 @@ router.put('/user/:jwt', (req, res, next) => {
   const jwtToekn = req.params.jwt
   jwt.verify(jwtToekn, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      res.send(JSON.stringify({"status": 400, "msg": "access token error."}))
+      res.json({"status": 400, "msg": "access token error."})
       return
     } else {
       let users = DBclient.db(process.env.DB).collection("users")
       console.log(decoded.email)
       users.count({email: {$ne: decoded.email}, displayname: data.displayName}, (err, count) => {
         if (count) {
-          res.send(JSON.stringify({"status": 500, "msg": "暱稱已被使用"}))
+          res.json({"status": 500, "msg": "暱稱已被使用"})
           err++
         } else {
           users.update({email: decoded.email}, {
@@ -337,7 +341,7 @@ router.put('/user/:jwt', (req, res, next) => {
               school: sanitize(data.school)
             }
           })
-          res.send(JSON.stringify({"status": 200, "msg": "Success"}))
+          res.json({"status": 200, "msg": "Success"})
         }
       })
     }
@@ -354,13 +358,13 @@ router.get('/user/:jwt', (req, res, next) => {
     }
     request(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${decoded.googleAccessToken}`, (error, response, body) => {
       if (response.statusCode != 200) {
-        res.send(JSON.stringify({"status": 400, "msg": "access token error."}))
+        res.json({"status": 400, "msg": "access token error."})
         res.end()
         return
       }
       let users = DBclient.db(process.env.DB).collection("users")
       users.findOne({email: decoded.email}, (err, doc) => {
-        res.send(JSON.stringify({"status": 200, "msg": "Success", "data": doc}))
+        res.json({"status": 200, "msg": "Success", "data": doc})
       })
     })
   })

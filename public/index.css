@@ -620,3 +620,19 @@ main {
     min-height: max-content;
     overflow: scroll;
 }
+
+.google_login {
+    display: inline-block;
+    border-radius: 0.15rem;
+    box-shadow: var(--shadow-small);
+    margin-top: 2em;
+    height: 50px;
+    cursor: pointer;
+    width: 180px;
+}
+
+.google_login img {
+    display: inline;
+    vertical-align: middle;
+    margin-right: 10px;
+}
